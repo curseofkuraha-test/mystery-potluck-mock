@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>ミステリーポットラック -YA MI NA BE-</title>
+  <meta name="theme-color" content="#f6eddc" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <button class="hint-button" type="button" onclick="window.open('./hint.html','_blank')" aria-label="ヒントを開く">
+    <span class="hint-icon">?</span><span>HINT</span>
+  </button>
+
+  <header class="hero" id="top">
+    <div class="hero-noise"></div>
+    <div class="steam steam-1"></div>
+    <div class="steam steam-2"></div>
+    <div class="hero-inner">
+      <p class="eyebrow">MYSTERY × POTLUCK × YA MI NA BE</p>
+      <h1>
+        <span class="title-main">ミステリーポットラック</span>
+        <span class="title-sub">- YA MI NA BE -</span>
+      </h1>
+      <p class="tagline">その鍋の中身は、謎だけが知っている。</p>
+      <div class="hero-pot" aria-hidden="true">
+        <div class="pot-rim"></div>
+        <div class="pot-body"><span>?</span><span>?</span><span>?</span><span>?</span></div>
+      </div>
+      <p class="scroll-cue">SCROLL TO START</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="story-anchor" data-story="intro"></section>
+
+    <section class="chapter chapter-light" id="stage-1" data-stage="1">
+      <div class="chapter-index">01</div>
+      <div class="chapter-copy">
+        <p class="chapter-kicker">4 DIRECTIONS / 4 INGREDIENTS</p>
+        <h2>まずは、4つの食材を見つけよう。</h2>
+        <p>4方向からそれぞれ7問。導いた答えを“鍋”に入れ、各方向の指定位置を読んで食材を導こう。</p>
+      </div>
+
+      <div class="answer-grid answer-grid-4" data-answer-group="first4">
+        <article class="answer-panel side-a">
+          <div class="side-mark">A</div>
+          <label for="a1">Aの食材</label>
+          <div class="answer-row"><input id="a1" autocomplete="off" placeholder="こたえを入力"><button data-check="a1">CHECK</button></div>
+          <p class="feedback" id="fb-a1"></p>
+        </article>
+        <article class="answer-panel side-b">
+          <div class="side-mark">B</div>
+          <label for="b1">Bの食材</label>
+          <div class="answer-row"><input id="b1" autocomplete="off" placeholder="こたえを入力"><button data-check="b1">CHECK</button></div>
+          <p class="feedback" id="fb-b1"></p>
+        </article>
+        <article class="answer-panel side-c">
+          <div class="side-mark">C</div>
+          <label for="c1">Cの食材</label>
+          <div class="answer-row"><input id="c1" autocomplete="off" placeholder="こたえを入力"><button data-check="c1">CHECK</button></div>
+          <p class="feedback" id="fb-c1"></p>
+        </article>
+        <article class="answer-panel side-d">
+          <div class="side-mark">D</div>
+          <label for="d1">Dの食材</label>
+          <div class="answer-row"><input id="d1" autocomplete="off" placeholder="こたえを入力"><button data-check="d1">CHECK</button></div>
+          <p class="feedback" id="fb-d1"></p>
+        </article>
+      </div>
+    </section>
+
+    <section class="story-anchor" data-story="afterFirst4"></section>
+
+    <section class="chapter chapter-dark locked" id="stage-2" data-stage="2">
+      <div class="lock-strip">4つの食材をすべて正解すると解放</div>
+      <div class="chapter-index">02</div>
+      <div class="chapter-copy">
+        <p class="chapter-kicker">TOGETHER / 3 MORE</p>
+        <h2>残る3つは、みんなで。</h2>
+        <p>4枚の手がかりカードを使い、共通の3問から追加食材を導こう。</p>
+      </div>
+      <div class="answer-grid answer-grid-3" data-answer-group="first3">
+        <article class="answer-panel compact"><div class="side-mark">E</div><label for="e1">共通食材 1</label><div class="answer-row"><input id="e1" autocomplete="off" placeholder="こたえ"><button data-check="e1">CHECK</button></div><p class="feedback" id="fb-e1"></p></article>
+        <article class="answer-panel compact"><div class="side-mark">F</div><label for="f1">共通食材 2</label><div class="answer-row"><input id="f1" autocomplete="off" placeholder="こたえ"><button data-check="f1">CHECK</button></div><p class="feedback" id="fb-f1"></p></article>
+        <article class="answer-panel compact"><div class="side-mark">G</div><label for="g1">共通食材 3</label><div class="answer-row"><input id="g1" autocomplete="off" placeholder="こたえ"><button data-check="g1">CHECK</button></div><p class="feedback" id="fb-g1"></p></article>
+      </div>
+    </section>
+
+    <section class="story-anchor" data-story="afterFirst7"></section>
+
+    <section class="chapter chapter-accent locked" id="stage-3" data-stage="3">
+      <div class="lock-strip">7つの食材をすべて正解すると解放</div>
+      <div class="chapter-index">03</div>
+      <div class="chapter-copy">
+        <p class="chapter-kicker">FINAL WORD / ROUND 1</p>
+        <h2>この鍋の行方を示す言葉は？</h2>
+        <p>7つの食材を使って、最後の謎を解こう。</p>
+      </div>
+      <div class="final-entry">
+        <input id="darkFinal" autocomplete="off" placeholder="最終回答">
+        <button data-check="darkFinal">ANSWER</button>
+        <p class="feedback" id="fb-darkFinal"></p>
+      </div>
+    </section>
+
+    <section class="story-anchor" data-story="badEnd"></section>
+
+    <section class="chapter chapter-light locked" id="stage-4" data-stage="4">
+      <div class="lock-strip">“あんこく”の先で解放</div>
+      <div class="chapter-index">04</div>
+      <div class="chapter-copy">
+        <p class="chapter-kicker">SECOND STATE / 4 INGREDIENTS</p>
+        <h2>もう一度、4方向の答えを確かめよう。</h2>
+        <p>手がかりの関係が変わると、同じ問題の景色も変わる。</p>
+      </div>
+      <div class="answer-grid answer-grid-4" data-answer-group="second4">
+        <article class="answer-panel side-a"><div class="side-mark">A</div><label for="a2">Aの新しい食材</label><div class="answer-row"><input id="a2" autocomplete="off" placeholder="こたえ"><button data-check="a2">CHECK</button></div><p class="feedback" id="fb-a2"></p></article>
+        <article class="answer-panel side-b"><div class="side-mark">B</div><label for="b2">Bの新しい食材</label><div class="answer-row"><input id="b2" autocomplete="off" placeholder="こたえ"><button data-check="b2">CHECK</button></div><p class="feedback" id="fb-b2"></p></article>
+        <article class="answer-panel side-c"><div class="side-mark">C</div><label for="c2">Cの新しい食材</label><div class="answer-row"><input id="c2" autocomplete="off" placeholder="こたえ"><button data-check="c2">CHECK</button></div><p class="feedback" id="fb-c2"></p></article>
+        <article class="answer-panel side-d"><div class="side-mark">D</div><label for="d2">Dの新しい食材</label><div class="answer-row"><input id="d2" autocomplete="off" placeholder="こたえ"><button data-check="d2">CHECK</button></div><p class="feedback" id="fb-d2"></p></article>
+      </div>
+    </section>
+
+    <section class="story-anchor" data-story="afterSecond4"></section>
+
+    <section class="chapter chapter-dark locked" id="stage-5" data-stage="5">
+      <div class="lock-strip">4つの新食材をすべて正解すると解放</div>
+      <div class="chapter-index">05</div>
+      <div class="chapter-copy">
+        <p class="chapter-kicker">TOGETHER AGAIN / 3 MORE</p>
+        <h2>残る3つも、もう一度。</h2>
+        <p>変わった手がかりで、共通の3問を解き直そう。</p>
+      </div>
+      <div class="answer-grid answer-grid-3" data-answer-group="second3">
+        <article class="answer-panel compact"><div class="side-mark">E</div><label for="e2">新・共通食材 1</label><div class="answer-row"><input id="e2" autocomplete="off" placeholder="こたえ"><button data-check="e2">CHECK</button></div><p class="feedback" id="fb-e2"></p></article>
+        <article class="answer-panel compact"><div class="side-mark">F</div><label for="f2">新・共通食材 2</label><div class="answer-row"><input id="f2" autocomplete="off" placeholder="こたえ"><button data-check="f2">CHECK</button></div><p class="feedback" id="fb-f2"></p></article>
+        <article class="answer-panel compact"><div class="side-mark">G</div><label for="g2">新・共通食材 3</label><div class="answer-row"><input id="g2" autocomplete="off" placeholder="こたえ"><button data-check="g2">CHECK</button></div><p class="feedback" id="fb-g2"></p></article>
+      </div>
+    </section>
+
+    <section class="story-anchor" data-story="afterSecond7"></section>
+
+    <section class="chapter chapter-accent locked" id="stage-6" data-stage="6">
+      <div class="lock-strip">7つの新食材をすべて正解すると解放</div>
+      <div class="chapter-index">06</div>
+      <div class="chapter-copy">
+        <p class="chapter-kicker">FINAL WORD / ROUND 2</p>
+        <h2>同じ最後の謎を、もう一度。</h2>
+        <p>問題は同じ。変わったのは、ここまで積み上げたもの。</p>
+      </div>
+      <div class="final-entry">
+        <input id="clearFinal" autocomplete="off" placeholder="最終回答">
+        <button data-check="clearFinal">ANSWER</button>
+        <p class="feedback" id="fb-clearFinal"></p>
+      </div>
+    </section>
+
+    <section class="credits locked" id="credits" data-stage="7">
+      <video class="credits-bg" autoplay muted loop playsinline poster="./assets/credits-poster-placeholder.jpg">
+        <source src="./assets/credits-placeholder.mp4" type="video/mp4">
+      </video>
+      <div class="credits-overlay"></div>
+      <div class="credits-content">
+        <p class="clear-mark">CLEAR</p>
+        <h2>だんけつ</h2>
+        <p class="credits-lead">なんだか、鍋が食べたくなってきませんか？</p>
+        <div class="roll">
+          <p>MYSTERY POTLUCK - YA MI NA BE -</p>
+          <p>Planning / Story / Puzzle Design</p>
+          <p>YOUR TEAM</p>
+          <p class="roll-gap">SPECIAL THANKS</p>
+          <p>PLAYERS WHO GATHER AROUND THE POT</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="story-modal" id="storyModal" aria-hidden="true">
+    <div class="story-backdrop" data-close-story></div>
+    <div class="story-sheet" role="dialog" aria-modal="true" aria-labelledby="storySpeaker">
+      <button class="story-close" type="button" data-close-story aria-label="閉じる">×</button>
+      <div class="portrait" id="storyPortrait">A</div>
+      <div class="story-body">
+        <p class="story-speaker" id="storySpeaker">YOU</p>
+        <div class="story-text" id="storyText"></div>
+        <button class="story-next" id="storyNext">NEXT</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>
