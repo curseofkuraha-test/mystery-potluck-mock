@@ -155,7 +155,6 @@ main{position:relative}
 .portrait[data-tone="minato"]{background:#355c78}
 .portrait[data-tone="haru"]{background:#689b76}
 .portrait[data-tone="you"]{background:#ad7b34}
-.portrait[data-tone="system"]{background:#252525}
 
 /* v3: onboarding / player name */
 .onboarding{position:fixed;inset:0;z-index:100;background:
@@ -205,13 +204,13 @@ main{position:relative}
 }
 
 /* v5: 名前入力中はページ位置を固定。プレビュー出現でもカード高を跳ねさせない。 */
-body.is-name-entry{overflow:hidden;position:fixed;inset:0;width:100%;height:100dvh;overscroll-behavior:none}
-.onboarding-page[data-onboarding-page="name"]{position:fixed;inset:0;width:100%;height:100dvh;min-height:0;overflow:hidden;place-items:start center;padding:clamp(28px,7svh,72px) 22px 20px}
-.onboarding-page[data-onboarding-page="name"] .name-card{max-height:calc(100dvh - 40px);overflow:hidden}
+body.is-name-entry{overflow:hidden;position:fixed;inset:0;width:100%;height:100svh;overscroll-behavior:none;touch-action:manipulation}
+.onboarding-page[data-onboarding-page="name"]{position:fixed;inset:0;width:100%;height:100svh;min-height:0;overflow:hidden;place-items:start center;padding:clamp(28px,7svh,72px) 22px 20px}
+.onboarding-page[data-onboarding-page="name"] .name-card{max-height:calc(100svh - 40px);overflow:hidden}
 .name-error{min-height:1.6em}
-.name-preview{min-height:72px;visibility:hidden;opacity:0;pointer-events:none}
+.name-preview{display:grid;min-height:72px;visibility:hidden;opacity:0;pointer-events:none}
 .name-preview.show{visibility:visible;opacity:1}
-@media(max-width:720px){.onboarding-page[data-onboarding-page="name"]{padding:24px 18px 12px}.onboarding-page[data-onboarding-page="name"] .name-card{max-height:calc(100dvh - 24px)}}
+@media(max-width:720px){.onboarding-page[data-onboarding-page="name"]{padding:24px 18px 12px}.onboarding-page[data-onboarding-page="name"] .name-card{max-height:calc(100svh - 24px)}}
 
 /* 地の文は人物UIを持たない。 */
 .story-sheet.is-narration{grid-template-columns:1fr;padding:26px 30px}
