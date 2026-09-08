@@ -75,8 +75,7 @@
 
     <section class="story-anchor" data-story="afterFirst4"></section>
 
-    <section class="chapter chapter-dark locked" id="stage-2" data-stage="2">
-      <div class="lock-strip">4つの食材をすべて正解すると解放</div>
+    <section class="chapter chapter-dark stage-hidden" id="stage-2" data-stage="2" aria-hidden="true">
       <div class="chapter-index">02</div>
       <div class="chapter-copy">
         <p class="chapter-kicker">TOGETHER / 3 MORE</p>
@@ -92,8 +91,7 @@
 
     <section class="story-anchor" data-story="afterFirst7"></section>
 
-    <section class="chapter chapter-accent locked" id="stage-3" data-stage="3">
-      <div class="lock-strip">7つの食材をすべて正解すると解放</div>
+    <section class="chapter chapter-accent stage-hidden" id="stage-3" data-stage="3" aria-hidden="true">
       <div class="chapter-index">03</div>
       <div class="chapter-copy">
         <p class="chapter-kicker">FINAL WORD / ROUND 1</p>
@@ -109,13 +107,33 @@
 
     <section class="story-anchor" data-story="badEnd"></section>
 
-    <section class="chapter chapter-light locked" id="stage-4" data-stage="4">
-      <div class="lock-strip">“あんこく”の先で解放</div>
+    <section class="chapter chapter-turn stage-hidden" id="stage-turn" data-stage="4" aria-hidden="true">
       <div class="chapter-index">04</div>
+      <div class="chapter-copy">
+        <p class="chapter-kicker">ONE MORE PUZZLE / TURN THE CLUE</p>
+        <h2>この夜を、4人で囲むために。</h2>
+        <p>ここでは挙動確認用の仮問題を置いています。実制作では、この謎を解くことで「実物のカードを取り皿の上で回す」ことが分かる設計に差し替えます。</p>
+      </div>
+      <div class="turn-demo" aria-label="カード回転の仮図">
+        <div class="plate-demo">
+          <div class="plate-pattern">●　▲　■　◆</div>
+          <div class="card-demo">CARD <span>↻</span></div>
+        </div>
+        <p>仮図：謎を解いた結果、カードを取り皿の上で回すことが分かる。</p>
+      </div>
+      <div class="final-entry">
+        <input id="turnStep" autocomplete="off" placeholder="仮回答">
+        <button data-check="turnStep">ANSWER</button>
+        <p class="feedback" id="fb-turnStep"></p>
+      </div>
+    </section>
+
+    <section class="chapter chapter-light stage-hidden" id="stage-4" data-stage="5" aria-hidden="true">
+      <div class="chapter-index">05</div>
       <div class="chapter-copy">
         <p class="chapter-kicker">SECOND STATE / 4 INGREDIENTS</p>
         <h2>もう一度、4方向の答えを確かめよう。</h2>
-        <p>手がかりの関係が変わると、同じ問題の景色も変わる。</p>
+        <p>カードを移動した状態で、これまでカードを使った問題をもう一度確かめよう。</p>
       </div>
       <div class="answer-grid answer-grid-4" data-answer-group="second4">
         <article class="answer-panel side-a"><div class="side-mark">A</div><label for="a2">Aの新しい食材</label><div class="answer-row"><input id="a2" autocomplete="off" placeholder="こたえ"><button data-check="a2">CHECK</button></div><p class="feedback" id="fb-a2"></p></article>
@@ -127,13 +145,12 @@
 
     <section class="story-anchor" data-story="afterSecond4"></section>
 
-    <section class="chapter chapter-dark locked" id="stage-5" data-stage="5">
-      <div class="lock-strip">4つの新食材をすべて正解すると解放</div>
-      <div class="chapter-index">05</div>
+    <section class="chapter chapter-dark stage-hidden" id="stage-5" data-stage="6" aria-hidden="true">
+      <div class="chapter-index">06</div>
       <div class="chapter-copy">
         <p class="chapter-kicker">TOGETHER AGAIN / 3 MORE</p>
         <h2>残る3つも、もう一度。</h2>
-        <p>変わった手がかりで、共通の3問を解き直そう。</p>
+        <p>移動した4枚のカードを使い、共通の3問ももう一度解こう。</p>
       </div>
       <div class="answer-grid answer-grid-3" data-answer-group="second3">
         <article class="answer-panel compact"><div class="side-mark">E</div><label for="e2">新・共通食材 1</label><div class="answer-row"><input id="e2" autocomplete="off" placeholder="こたえ"><button data-check="e2">CHECK</button></div><p class="feedback" id="fb-e2"></p></article>
@@ -144,9 +161,8 @@
 
     <section class="story-anchor" data-story="afterSecond7"></section>
 
-    <section class="chapter chapter-accent locked" id="stage-6" data-stage="6">
-      <div class="lock-strip">7つの新食材をすべて正解すると解放</div>
-      <div class="chapter-index">06</div>
+    <section class="chapter chapter-accent stage-hidden" id="stage-6" data-stage="7" aria-hidden="true">
+      <div class="chapter-index">07</div>
       <div class="chapter-copy">
         <p class="chapter-kicker">FINAL WORD / ROUND 2</p>
         <h2>同じ最後の謎を、もう一度。</h2>
@@ -159,7 +175,7 @@
       </div>
     </section>
 
-    <section class="credits locked" id="credits" data-stage="7">
+    <section class="credits stage-hidden" id="credits" data-stage="8" aria-hidden="true">
       <video class="credits-bg" autoplay muted loop playsinline poster="./assets/credits-poster-placeholder.jpg">
         <source src="./assets/credits-placeholder.mp4" type="video/mp4">
       </video>
