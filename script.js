@@ -1,22 +1,5 @@
-const answerMap = {
-  a1: ['こんそめ','コンソメ'],
-  b1: ['まかろん','マカロン'],
-  c1: ['きゅうり','キュウリ','胡瓜'],
-  d1: ['こういか','コウイカ','甲烏賊','甲いか','甲イカ'],
-  e1: ['くろまめ','クロマメ','黒豆'],
-  f1: ['あずき','アズキ','小豆'],
-  g1: ['あめ','アメ','飴'],
-  darkFinal: ['あんこく','アンコク','暗黒'],
-  turnStep: ['まわす','マワス','回す'],
-  a2: ['だいこん','ダイコン','大根'],
-  b2: ['しいたけ','シイタケ','椎茸','しい茸'],
-  c2: ['ぶたにく','ブタニク','豚肉'],
-  d2: ['にんじん','ニンジン','人参'],
-  e2: ['はくさい','ハクサイ','白菜'],
-  f2: ['もつ','モツ'],
-  g2: ['もやし','モヤシ','萌やし'],
-  clearFinal: ['だんけつ','ダンケツ','団結']
-};
+const answerMap = window.MYSTERY_POTLUCK_ANSWERS || {};
+const storyConfig = window.MYSTERY_POTLUCK_STORY || {characters:{}, intro:[]};
 
 const groups = {
   first4: ['a1','b1','c1','d1'],
@@ -25,15 +8,41 @@ const groups = {
   second3: ['e2','f2','g2']
 };
 
-const state = Object.fromEntries(Object.keys(answerMap).map(k => [k,false]));
-const fired = new Set();
+const STORAGE_KEY = 'mysteryPotluckV3';
+const blankState = () => Object.fromEntries(Object.keys(answerMap).map(k => [k,false]));
+let state = blankState();
+let fired = new Set();
+let player = { name:'あなた', romaji:'YOU', initial:'Y' };
+
+function loadSave(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return null;
+    return JSON.parse(raw);
+  }catch(_){ return null; }
+}
+function saveProgress(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      started:true,
+      player,
+      state,
+      fired:[...fired]
+    }));
+  }catch(_){ /* 保存不可環境ではセッション内のみ継続 */ }
+}
+function clearSave(){
+  try{ localStorage.removeItem(STORAGE_KEY); }catch(_){ }
+  location.reload();
+}
 
 function normalize(value){
-  return value.normalize('NFKC').trim().replace(/[\s・･,，。\.]/g,'').toLowerCase();
+  return String(value ?? '').normalize('NFKC').trim().replace(/[\s・･,，。\.]/g,'').toLowerCase();
 }
 function isCorrect(id,value){
+  const allowed = answerMap[id] || [];
   const v = normalize(value);
-  return answerMap[id].some(ans => normalize(ans) === v);
+  return allowed.some(ans => normalize(ans) === v);
 }
 function setFeedback(id, ok){
   const fb = document.getElementById(`fb-${id}`);
@@ -68,7 +77,19 @@ function scrollToStage(id){
 function completeOnce(key, fn){
   if(fired.has(key)) return;
   fired.add(key);
+  saveProgress();
   fn();
+}
+
+function restoreVisibleProgress(){
+  Object.entries(state).forEach(([id,ok]) => { if(ok) lockCorrectField(id); });
+  if(groupComplete('first4')) reveal('stage-2');
+  if(groupComplete('first3')) reveal('stage-3');
+  if(state.darkFinal) reveal('stage-turn');
+  if(state.turnStep) reveal('stage-4');
+  if(groupComplete('second4')) reveal('stage-5');
+  if(groupComplete('second3')) reveal('stage-6');
+  if(state.clearFinal) reveal('credits');
 }
 
 function checkAnswer(id){
@@ -81,6 +102,7 @@ function checkAnswer(id){
 
   state[id] = true;
   lockCorrectField(id);
+  saveProgress();
 
   if(groupComplete('first4')){
     completeOnce('first4',()=>{
@@ -126,113 +148,194 @@ function checkAnswer(id){
   }
 }
 
-document.querySelectorAll('[data-check]').forEach(btn => btn.addEventListener('click',()=>checkAnswer(btn.dataset.check)));
-document.querySelectorAll('input').forEach(inp => inp.addEventListener('keydown',e=>{
+// ----- 名前入力 -----
+function isKanaName(value){
+  const v = String(value ?? '').normalize('NFKC').trim();
+  if(!v || [...v].length > 6) return false;
+  // ひらがな・カタカナ・長音のみ。HTML記号や英数は許可しない。
+  return /^[ぁ-ゖゝゞァ-ヺヽヾー]+$/u.test(v);
+}
+
+const digraph = {
+  'きゃ':'kya','きゅ':'kyu','きょ':'kyo','ぎゃ':'gya','ぎゅ':'gyu','ぎょ':'gyo',
+  'しゃ':'sha','しゅ':'shu','しょ':'sho','じゃ':'ja','じゅ':'ju','じょ':'jo',
+  'ちゃ':'cha','ちゅ':'chu','ちょ':'cho','にゃ':'nya','にゅ':'nyu','にょ':'nyo',
+  'ひゃ':'hya','ひゅ':'hyu','ひょ':'hyo','びゃ':'bya','びゅ':'byu','びょ':'byo',
+  'ぴゃ':'pya','ぴゅ':'pyu','ぴょ':'pyo','みゃ':'mya','みゅ':'myu','みょ':'myo',
+  'りゃ':'rya','りゅ':'ryu','りょ':'ryo','ふぁ':'fa','ふぃ':'fi','ふぇ':'fe','ふぉ':'fo',
+  'てぃ':'ti','でぃ':'di','うぃ':'wi','うぇ':'we','うぉ':'wo','ゔぁ':'va','ゔぃ':'vi','ゔぇ':'ve','ゔぉ':'vo'
+};
+const mono = {
+  'あ':'a','い':'i','う':'u','え':'e','お':'o','か':'ka','き':'ki','く':'ku','け':'ke','こ':'ko',
+  'が':'ga','ぎ':'gi','ぐ':'gu','げ':'ge','ご':'go','さ':'sa','し':'shi','す':'su','せ':'se','そ':'so',
+  'ざ':'za','じ':'ji','ず':'zu','ぜ':'ze','ぞ':'zo','た':'ta','ち':'chi','つ':'tsu','て':'te','と':'to',
+  'だ':'da','ぢ':'ji','づ':'zu','で':'de','ど':'do','な':'na','に':'ni','ぬ':'nu','ね':'ne','の':'no',
+  'は':'ha','ひ':'hi','ふ':'fu','へ':'he','ほ':'ho','ば':'ba','び':'bi','ぶ':'bu','べ':'be','ぼ':'bo',
+  'ぱ':'pa','ぴ':'pi','ぷ':'pu','ぺ':'pe','ぽ':'po','ま':'ma','み':'mi','む':'mu','め':'me','も':'mo',
+  'や':'ya','ゆ':'yu','よ':'yo','ら':'ra','り':'ri','る':'ru','れ':'re','ろ':'ro','わ':'wa','を':'o',
+  'ん':'n','ゔ':'vu','ぁ':'a','ぃ':'i','ぅ':'u','ぇ':'e','ぉ':'o','ゃ':'ya','ゅ':'yu','ょ':'yo'
+};
+function kataToHira(str){
+  return [...str].map(ch=>{
+    const c=ch.charCodeAt(0);
+    return (c>=0x30A1 && c<=0x30F6) ? String.fromCharCode(c-0x60) : ch;
+  }).join('');
+}
+function kanaToRomaji(value){
+  const src = kataToHira(String(value).normalize('NFKC'));
+  let out='';
+  let geminate=false;
+  for(let i=0;i<src.length;i++){
+    const ch=src[i];
+    if(ch==='っ'){ geminate=true; continue; }
+    if(ch==='ー'){
+      const m=out.match(/[aeiou](?!.*[aeiou])/);
+      if(m) out += m[0];
+      continue;
+    }
+    const pair=src.slice(i,i+2);
+    let roma=digraph[pair];
+    if(roma) i++;
+    else roma=mono[ch] || '';
+    if(geminate && roma){
+      const head = roma.startsWith('ch') ? 't' : roma.startsWith('sh') ? 's' : roma[0];
+      out += head;
+      geminate=false;
+    }
+    out += roma;
+  }
+  return out.toUpperCase() || 'YOU';
+}
+function setPlayerName(raw){
+  const name = String(raw).normalize('NFKC').trim();
+  const romaji = kanaToRomaji(name);
+  player = {name, romaji, initial:(romaji[0] || 'Y').toUpperCase()};
+}
+function updateNamePreview(){
+  const input=document.getElementById('playerName');
+  const v=input.value.normalize('NFKC').trim();
+  const preview=document.getElementById('namePreview');
+  const err=document.getElementById('nameError');
+  if(!v){ preview.classList.remove('show'); err.textContent=''; return; }
+  if(!isKanaName(v)){
+    preview.classList.remove('show');
+    err.textContent = [...v].length > 6 ? '6文字以内で入力してください。' : '仮名で入力してください。';
+    return;
+  }
+  err.textContent='';
+  const r=kanaToRomaji(v);
+  document.getElementById('namePreviewText').textContent=v;
+  document.getElementById('namePreviewRoman').textContent=r;
+  document.querySelector('#namePreviewAvatar .mini-initial').textContent=(r[0]||'Y').toUpperCase();
+  preview.classList.add('show');
+}
+
+function showOnboardingPage(name){
+  document.querySelectorAll('.onboarding-page').forEach(page=>{
+    const on=page.dataset.onboardingPage===name;
+    page.classList.toggle('is-active',on);
+    page.setAttribute('aria-hidden', String(!on));
+  });
+}
+function beginGame(isNew){
+  document.getElementById('onboarding').classList.add('is-hidden');
+  const shell=document.getElementById('gameShell');
+  shell.hidden=false;
+  restoreVisibleProgress();
+  if(isNew){
+    fired.add('intro');
+    saveProgress();
+    setTimeout(()=>openStory('intro'),420);
+  }
+}
+
+document.getElementById('toNameStep').addEventListener('click',()=>showOnboardingPage('name'));
+document.getElementById('backToNotice').addEventListener('click',()=>showOnboardingPage('notice'));
+document.getElementById('resetProgress').addEventListener('click',clearSave);
+document.getElementById('playerName').addEventListener('input',updateNamePreview);
+document.getElementById('playerName').addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('startGame').click(); });
+document.getElementById('startGame').addEventListener('click',()=>{
+  const raw=document.getElementById('playerName').value;
+  const err=document.getElementById('nameError');
+  if(!isKanaName(raw)){
+    const len=[...String(raw).normalize('NFKC').trim()].length;
+    err.textContent = len>6 ? '6文字以内で入力してください。' : '仮名で入力してください。';
+    return;
+  }
+  setPlayerName(raw);
+  state=blankState();
+  fired=new Set();
+  saveProgress();
+  beginGame(true);
+});
+
+// ----- 解答判定 -----
+document.querySelectorAll('[data-check]').forEach(btn=>btn.addEventListener('click',()=>checkAnswer(btn.dataset.check)));
+document.querySelectorAll('#gameShell input').forEach(inp=>inp.addEventListener('keydown',e=>{
   if(e.key==='Enter' && !inp.disabled) checkAnswer(inp.id);
 }));
 
-const storyData = {
-  intro: [
-    {speaker:'あなた',portrait:'YOU',tone:'you',text:'今日は、あなたの誕生日。高校時代からの友人たちと、久しぶりに4人で予定を合わせることができた。'},
-    {speaker:'ナツ',portrait:'N',tone:'natsu',text:'「せっかく4人揃ったんだし、普通にご飯食べて終わるの、もったいなくない？」'},
-    {speaker:'ミナト',portrait:'M',tone:'minato',text:'「その言い方をすると、だいたい面倒なことが始まるんだよな。」'},
-    {speaker:'ハル',portrait:'H',tone:'haru',text:'「じゃあ闇鍋にしよう。しかも、4人とも何が入るか知らないやつ。」'},
-    {speaker:'ナツ',portrait:'N',tone:'natsu',text:'「いいじゃん。何を入れるかは――謎を解いて決めよう。」'},
-    {speaker:'SYSTEM',portrait:'?',tone:'system',text:'中央に“鍋”を置き、4方向の謎に挑戦してください。どの方向から始めても構いません。相談も自由です。'}
-  ],
-  afterFirst4:[
-    {speaker:'ミナト',portrait:'M',tone:'minato',text:'「4つ揃ったな。順番バラバラで解いてるのに、ちゃんと一つの鍋に集まっていくの、ちょっと面白いな。」'},
-    {speaker:'ナツ',portrait:'N',tone:'natsu',text:'「まだ3つある。ここからは4人分の手がかりをまとめて使うんだって。」'},
-    {speaker:'ハル',portrait:'H',tone:'haru',text:'「じゃあ、今度は全員参加だ。」'}
-  ],
-  afterFirst7:[
-    {speaker:'ナツ',portrait:'N',tone:'natsu',text:'「これで7つ！ ……いや、すごいラインナップだな。」'},
-    {speaker:'ミナト',portrait:'M',tone:'minato',text:'「闇鍋としては満点かもしれないけど、まだ鍋には入れるなよ。」'},
-    {speaker:'ハル',portrait:'H',tone:'haru',text:'「最後の謎が残ってる。7つの食材を使うみたい。」'}
-  ],
-  badEnd:[
-    {speaker:'SYSTEM',portrait:'!',tone:'system',text:'あんこく'},
-    {speaker:'ナツ',portrait:'N',tone:'natsu',text:'「……暗黒。まあ、この7つを見たら言いたくなる気持ちは分かる。」'},
-    {speaker:'あなた',portrait:'YOU',tone:'you',text:'「待って。……きゅうりが入ってる。」'},
-    {speaker:'ミナト',portrait:'M',tone:'minato',text:'「あ。」'},
-    {speaker:'ハル',portrait:'H',tone:'haru',text:'「高校のとき、罰ゲームで無理して食べてから駄目になったやつ……。」'},
-    {speaker:'あなた',portrait:'YOU',tone:'you',text:'匂いだけでも、あのときの気分の悪さを思い出してしまう。食べられないことは、3人も知っている。'},
-    {speaker:'あなた',portrait:'YOU',tone:'you',text:'「ごめん。闇鍋なんだから仕方ないし、俺だけ別のもの食べれば――」'},
-    {speaker:'ナツ',portrait:'N',tone:'natsu',text:'「それじゃ、今日4人で集まった意味ないでしょ。」'},
-    {speaker:'ミナト',portrait:'M',tone:'minato',text:'「まだ鍋には入れてない。だったら、できることはあるかもしれない。」'},
-    {speaker:'SYSTEM',portrait:'?',tone:'system',text:'この夜を4人で囲むために、もう一つだけ謎を解いてください。'}
-  ],
-  afterTurn:[
-    {speaker:'ハル',portrait:'H',tone:'haru',text:'「……カードを、取り皿の上で回す？」'},
-    {speaker:'ナツ',portrait:'N',tone:'natsu',text:'「やってみよう。」'},
-    {speaker:'SYSTEM',portrait:'↻',tone:'system',text:'図のとおりにカードを回してください。回したカードに現れた“動き”を、そのまま実物で確かめてください。'},
-    {speaker:'ミナト',portrait:'M',tone:'minato',text:'「これ……カードを隣へ渡せってことか。」'},
-    {speaker:'ハル',portrait:'H',tone:'haru',text:'「全部同じだ。4枚とも、一つ隣へ。」'},
-    {speaker:'SYSTEM',portrait:'→',tone:'system',text:'カードを移動したら、これまでカードを使った問題をもう一度見直してください。'}
-  ],
-  afterSecond4:[
-    {speaker:'ナツ',portrait:'N',tone:'natsu',text:'「変わった……！ 同じ問題なのに、出てきた食材が全部違う。」'},
-    {speaker:'ミナト',portrait:'M',tone:'minato',text:'「待って。このカード、4人で解いた3問にも使ったよな。」'},
-    {speaker:'ハル',portrait:'H',tone:'haru',text:'「そっちも今の配置で解いたら、変わるかも。」'}
-  ],
-  afterSecond7:[
-    {speaker:'ナツ',portrait:'N',tone:'natsu',text:'「大根、しいたけ、豚肉、人参、白菜、もつ、もやし。」'},
-    {speaker:'ミナト',portrait:'M',tone:'minato',text:'「今度は、ちゃんと4人で食べられる鍋だ。」'},
-    {speaker:'ハル',portrait:'H',tone:'haru',text:'「でも最後の謎は同じだよ。」'},
-    {speaker:'あなた',portrait:'YOU',tone:'you',text:'同じ問題。違うのは、ここまで4人で集めてきたものだけ。'}
-  ],
-  clear:[
-    {speaker:'SYSTEM',portrait:'★',tone:'system',text:'だんけつ'},
-    {speaker:'ナツ',portrait:'N',tone:'natsu',text:'「よし。今度こそ鍋にしよう！」'},
-    {speaker:'ミナト',portrait:'M',tone:'minato',text:'「肉はちゃんと火が通ってから食えよ。闇鍋でもそこは守れ。」'},
-    {speaker:'ハル',portrait:'H',tone:'haru',text:'「ポン酢、そっちにある？」'},
-    {speaker:'あなた',portrait:'YOU',tone:'you',text:'誰かが具材を入れて、誰かが取り分ける。くだらない話をして、笑って、鍋の湯気が四人の間に上がる。'},
-    {speaker:'ハル',portrait:'H',tone:'haru',text:'「なんか今日、久しぶりに高校の頃みたいだったな。」'},
-    {speaker:'あなた',portrait:'YOU',tone:'you',text:'大人になって、前みたいに簡単には集まれない。それでも、こういう時間はまだ作れる。'}
-  ]
-};
+// ----- ストーリー -----
+const modal=document.getElementById('storyModal');
+const storySpeaker=document.getElementById('storySpeaker');
+const storyText=document.getElementById('storyText');
+const storyPortrait=document.getElementById('storyPortrait');
+const portraitInitial=document.getElementById('portraitInitial');
+const storyNext=document.getElementById('storyNext');
+let currentStory=null;
+let currentIndex=0;
+let afterStory=null;
 
-const modal = document.getElementById('storyModal');
-const storySpeaker = document.getElementById('storySpeaker');
-const storyText = document.getElementById('storyText');
-const storyPortrait = document.getElementById('storyPortrait');
-const storyNext = document.getElementById('storyNext');
-let currentStory = null;
-let currentIndex = 0;
-let afterStory = null;
-
-function openStory(key, onClose=null){
-  const arr = storyData[key];
-  if(!arr?.length) { if(onClose) onClose(); return; }
-  currentStory = key;
-  currentIndex = 0;
-  afterStory = onClose;
+function template(text){
+  return String(text ?? '')
+    .replaceAll('{{player}}', player.name)
+    .replaceAll('{{playerInitial}}', player.initial);
+}
+function characterFor(key){
+  return storyConfig.characters?.[key] || storyConfig.characters?.system || {display:'SYSTEM',initial:'!',tone:'system',human:false};
+}
+function openStory(key,onClose=null){
+  const arr=storyConfig[key];
+  if(!arr?.length){ if(onClose) onClose(); return; }
+  currentStory=key;
+  currentIndex=0;
+  afterStory=onClose;
   renderStory();
   modal.classList.add('show');
   modal.setAttribute('aria-hidden','false');
 }
 function renderStory(){
-  const item = storyData[currentStory][currentIndex];
-  storySpeaker.textContent = item.speaker;
-  storyText.textContent = item.text;
-  storyPortrait.textContent = item.portrait;
-  storyPortrait.dataset.tone = item.tone || 'system';
-  storyNext.textContent = currentIndex === storyData[currentStory].length-1 ? 'CLOSE' : 'NEXT';
+  const item=storyConfig[currentStory][currentIndex];
+  const ch=characterFor(item.speakerKey);
+  storySpeaker.textContent=template(ch.display);
+  storyText.textContent=template(item.text); // HTMLとして解釈しない
+  portraitInitial.textContent=template(ch.initial);
+  storyPortrait.dataset.tone=ch.tone || 'system';
+  storyPortrait.dataset.human=String(Boolean(ch.human));
+  storyNext.textContent=currentIndex===storyConfig[currentStory].length-1?'CLOSE':'NEXT';
 }
 function closeStory(){
   modal.classList.remove('show');
   modal.setAttribute('aria-hidden','true');
-  currentStory = null;
-  const cb = afterStory;
-  afterStory = null;
+  currentStory=null;
+  const cb=afterStory;
+  afterStory=null;
   if(cb) cb();
 }
 storyNext.addEventListener('click',()=>{
-  if(currentIndex < storyData[currentStory].length-1){
-    currentIndex++;
-    renderStory();
-  } else closeStory();
+  if(currentIndex<storyConfig[currentStory].length-1){ currentIndex++; renderStory(); }
+  else closeStory();
 });
 document.querySelectorAll('[data-close-story]').forEach(el=>el.addEventListener('click',closeStory));
 
-setTimeout(()=>openStory('intro'),550);
+// ----- 起動 -----
+const saved=loadSave();
+if(saved?.started && saved.player?.name && isKanaName(saved.player.name)){
+  player=saved.player;
+  state={...blankState(), ...(saved.state||{})};
+  fired=new Set(saved.fired||[]);
+  beginGame(false);
+}else{
+  document.getElementById('gameShell').hidden=true;
+  showOnboardingPage('notice');
+}
