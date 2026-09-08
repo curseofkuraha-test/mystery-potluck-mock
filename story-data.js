@@ -1,21 +1,9 @@
 /*
-  ストーリーデータ v7
+  ストーリーデータ v8
+  ユーザー指定の「通しセリフ台本」をWEB進行用に分割したものです。
   speakerKey: player / natsu / minato / haru / narrator
   narrator は話者名・人物アイコンを表示しない地の文です。
   text 内の {{player}} は入力された名前に自動置換されます。
-
-  作品方針
-  - 劇中で「謎解きゲームを遊ぶ」とは扱わない。
-  - 市販の福袋型闇鍋キットを使い、謎は今夜の具材を決める仕組みとして存在する。
-  - あんこくは失敗表示ではなく、1回目の7食材から正しく導かれる言葉。
-  - 誕生日の主役はハル。きゅうりを強く苦手としているのはミナト。
-  - 団結を台詞で説明しすぎず、カードを渡す／鍋を囲む行動で見せる。
-
-  キャラクター
-  ナツ   : 思いついたら即行動。変な食材ほど喜ぶ。「まずそう」は褒め言葉。
-  ミナト : 現実派。鍋として成立するかを真剣に検証する。きゅうりにだけ反応が崩れる。
-  ハル   : 誕生日の主役。穏やかな観察役。実は食への執着が強い。要所で静かに核心を突く。
-  {{player}} : 4人目。固定人格は薄く、素直な反応を中心にする。
 */
 window.MYSTERY_POTLUCK_STORY = {
   characters: {
@@ -27,117 +15,154 @@ window.MYSTERY_POTLUCK_STORY = {
   },
 
   intro: [
-    {speakerKey:'narrator', text:'高校時代からの友人4人が、久しぶりに同じテーブルへ集まった。今日はハルの誕生日。全員が当日にそろうのは、随分久しぶりだった。'},
-    {speakerKey:'natsu', text:'「というわけで、今日の主役にプレゼント。」'},
-    {speakerKey:'minato', text:'「そのサイズで食べ物じゃなかったら帰るぞ。」'},
-    {speakerKey:'natsu', text:'「食べ物になるやつ。たぶん。」'},
-    {speakerKey:'haru', text:'「“たぶん”が付くプレゼント初めてかも。」'},
-    {speakerKey:'narrator', text:'ナツが取り出したのは、福袋のように中身の分からない闇鍋キットだった。書かれた謎を解いた分だけ、今夜の具材が決まっていくらしい。'},
-    {speakerKey:'natsu', text:'「自分で選んだ具材を持ち寄るより、全員なにが入るか分からない方が闇鍋っぽくない？」'},
-    {speakerKey:'minato', text:'「理屈は分かる。食事として成立する保証が一切ないだけで。」'},
-    {speakerKey:'haru', text:'「いいじゃん。普通にご飯食べるより、今日はそっちがいい。」'},
-    {speakerKey:'player', text:'「誕生日の本人が言うなら、やるしかないね。」'},
-    {speakerKey:'natsu', text:'「決まり。出てきた具材に文句なし。」'},
-    {speakerKey:'minato', text:'「俺は文句を言う。入れるけど文句は言う。」'},
-    {speakerKey:'narrator', text:'中央に“鍋”を置き、4人はそれぞれの方向から、今夜の具材を確かめていくことにした。キットの隅には、小さな紙封筒がひとつ残っていた。誰も気に留めなかった。'}
+    {speakerKey:'narrator', text:'玄関で靴を脱ぐなり、ナツがリュックから何か取り出した。'},
+    {speakerKey:'natsu', text:'「見て見て、これ。」'},
+    {speakerKey:'minato', text:'「何それ。」'},
+    {speakerKey:'natsu', text:'「福袋みたいなやつなんだけど、開けるだけじゃなくて、謎解いた分だけ具材が決まるらしくて。おもしろそうだったから買った。」'},
+    {speakerKey:'minato', text:'「絶対面倒くさいやつじゃん、それ。」'},
+    {speakerKey:'natsu', text:'「面倒くさいのが楽しいんだよ。」'},
+    {speakerKey:'haru', text:'「（笑いながら）いいじゃん、せっかくだし。誕生日にちょうどいい。」'},
+    {speakerKey:'minato', text:'「お前が言うなら、まあ。」'},
+    {speakerKey:'narrator', text:'四人分の椅子が、テーブルの四辺に引かれる。箱の中には、紙の鍋と、四枚のカードが入っていた。'},
+    {speakerKey:'natsu', text:'「{{player}}もほら、座って座って。」'},
+    {speakerKey:'haru', text:'「じゃ、開けよっか。」'},
+    {speakerKey:'narrator', text:'箱の底に、小さな紙の封筒がもう一つ入っていることに、この時点では誰も気づいていない。'}
   ],
 
+  // 28問進行中に任意で挿入する脱線会話ストック。現モックでは自動表示しません。
+  interludes: [
+    [
+      {speakerKey:'natsu', text:'「これ絶対ひっかけでしょ。」'},
+      {speakerKey:'minato', text:'「別にひっかけじゃないと思うけど。」'},
+      {speakerKey:'natsu', text:'「いや、なんか裏がありそうな顔してる、この問題。」'},
+      {speakerKey:'minato', text:'「問題に顔はない。」'}
+    ],
+    [
+      {speakerKey:'minato', text:'「この問題、量多くない？」'},
+      {speakerKey:'natsu', text:'「多いほうが盛り上がるでしょ。」'},
+      {speakerKey:'minato', text:'「盛り上がりと解きやすさは別。」'},
+      {speakerKey:'haru', text:'「（笑って）まあまあ。」'}
+    ],
+    [
+      {speakerKey:'haru', text:'「これ、なんか懐かしい感じの問題だね。」'},
+      {speakerKey:'natsu', text:'「懐かしいって、初めて見るやつでしょ。」'},
+      {speakerKey:'haru', text:'「そうなんだけど、なんか。」'}
+    ],
+    [
+      {speakerKey:'haru', text:'「なんか、この問題だけ手触りが違う気がする。」'},
+      {speakerKey:'minato', text:'「気のせいだと思う。」'},
+      {speakerKey:'haru', text:'「かもね。」'}
+    ]
+  ],
+
+  // 4食材が揃い、共通3問へ進む直前。
   afterFirst4: [
-    {speakerKey:'natsu', text:'「4つ出た。もう楽しい。」'},
-    {speakerKey:'minato', text:'「俺はまだ鍋として評価を保留してる。」'},
-    {speakerKey:'haru', text:'「ミナト、本当に料理の審査みたいな顔してるね。」'},
-    {speakerKey:'minato', text:'「口に入るものだからな。」'},
-    {speakerKey:'player', text:'「あと3つで評価がひっくり返るかも。」'},
-    {speakerKey:'natsu', text:'「むしろもっと訳分かんなくなってほしい。」'},
-    {speakerKey:'minato', text:'「願うな。」'},
-    {speakerKey:'narrator', text:'残る3つは、4人のカードを使って確かめる。まだ、どんな鍋になるかは誰にも分からない。'}
+    {speakerKey:'natsu', text:'「お、カード使うやつだ。」'},
+    {speakerKey:'minato', text:'「これ、四人分ちゃんと揃えないと駄目な作りっぽいな。」'},
+    {speakerKey:'haru', text:'「じゃあ、みんなの持ってきて。」'},
+    {speakerKey:'natsu', text:'「はいはい。」'}
   ],
 
+  // 共通3問を終え、7食材が揃った直後。
   afterFirst7: [
-    {speakerKey:'narrator', text:'7つの食材が出そろった。コンソメ、マカロン、きゅうり、コウイカ、黒豆、小豆、飴。'},
-    {speakerKey:'natsu', text:'「最高。」'},
-    {speakerKey:'minato', text:'「何を見て最高と言った？」'},
-    {speakerKey:'natsu', text:'「マカロンとイカが同じ鍋に入る未来。」'},
-    {speakerKey:'haru', text:'「小豆と飴までいるから、甘い方にも逃げられるね。」'},
-    {speakerKey:'minato', text:'「逃げ道を増やすな。鍋に戻ってこい。」'},
-    {speakerKey:'player', text:'「まだ入れないんだよね？」'},
-    {speakerKey:'haru', text:'「うん。最後に、この7つから出る言葉を確かめてから。」'},
-    {speakerKey:'narrator', text:'食材はまだ鍋へ入れない。4人は、そろった7つを使って最後の言葉を導く。'}
+    {speakerKey:'narrator', text:'三問を解き終え、盤面に最後の食材が浮かぶ。'},
+    {speakerKey:'haru', text:'「これで、全部揃ったかな。」'},
+    {speakerKey:'minato', text:'「七つ、か。」'}
   ],
 
+  // 「あんこく」正解後〜付属封筒発見まで。
   badEnd: [
-    {speakerKey:'natsu', text:'「……あんこく。」'},
-    {speakerKey:'minato', text:'「この並びから出ると、妙に納得するのが腹立つ。」'},
-    {speakerKey:'haru', text:'「闇鍋から“あんこく”。かなりそれっぽい。」'},
-    {speakerKey:'natsu', text:'「よし。じゃ、具材そろえ――」'},
-    {speakerKey:'narrator', text:'ナツが食材の一覧へ手を伸ばしたとき、ミナトだけが動かなかった。さっきまで一番細かく中身を確認していたのに、「きゅうり」の文字から目を逸らしている。'},
-    {speakerKey:'player', text:'「ミナト？」'},
-    {speakerKey:'minato', text:'「……きゅうり、入るんだよな。」'},
-    {speakerKey:'haru', text:'「まだ駄目？」'},
-    {speakerKey:'narrator', text:'高校時代のある出来事以来、ミナトはきゅうりだけはどうしても口にできない。アレルギーではない。それでも、無理に食べれば済む話でもなかった。'},
-    {speakerKey:'minato', text:'「気にしなくていい。俺だけ別の食べるから。」'},
-    {speakerKey:'natsu', text:'「それはなし。」'},
-    {speakerKey:'minato', text:'「闇鍋なんだから、こういうこともあるだろ。」'},
-    {speakerKey:'natsu', text:'「あるけど。4人で鍋やるって言ったじゃん。」'},
-    {speakerKey:'haru', text:'「まだ何も入れてないしね。」'},
-    {speakerKey:'player', text:'「今なら、まだ考えられる。」'},
-    {speakerKey:'narrator', text:'テーブルの上を見渡したハルが、端に残っていた小さな封筒へ目を留めた。'},
-    {speakerKey:'haru', text:'「……これ、まだ開けてなくない？」'},
-    {speakerKey:'minato', text:'「あったな、そんなの。」'},
-    {speakerKey:'natsu', text:'「説明書の予備かと思ってた。」'},
-    {speakerKey:'haru', text:'「開けてみよ。」'}
+    {speakerKey:'natsu', text:'「よし、最後これ解けば終わりでしょ。」'},
+    {speakerKey:'narrator', text:'7食材を打ち込むと、盤面に文字が浮かぶ。'},
+    {speakerKey:'narrator', text:'あ ん こ く'},
+    {speakerKey:'minato', text:'「あんこく…もはやそのまんまじゃん。」'},
+    {speakerKey:'natsu', text:'「逆にすごくない？闇鍋で“あんこく”って出るの、才能でしょ。」'},
+    {speakerKey:'haru', text:'「（笑って）いや、才能とは違う気がする。」'},
+    {speakerKey:'natsu', text:'「じゃあ完成ってこと？」'},
+    {speakerKey:'minato', text:'「一応、これで終わりのはず。」'},
+    {speakerKey:'narrator', text:'四人がそれぞれ、少し達成感のある顔をしている。'},
+    {speakerKey:'natsu', text:'「じゃ、これで具材揃ったし、あとは――」'},
+    {speakerKey:'narrator', text:'ふと見ると、ミナトだけ、リストの「きゅうり」の文字から目を逸らしていた。'},
+    {speakerKey:'player', text:'「…ミナト？」'},
+    {speakerKey:'minato', text:'「あ、いや。大丈夫。」'},
+    {speakerKey:'natsu', text:'「大丈夫って顔してない。」'},
+    {speakerKey:'minato', text:'「ちょっと、昔から苦手で。俺だけ別の食べるから、それで――」'},
+    {speakerKey:'natsu', text:'「いや、別のはなし。」'},
+    {speakerKey:'minato', text:'「でも――」'},
+    {speakerKey:'natsu', text:'「4人で鍋やるって言ったじゃん。」'},
+    {speakerKey:'narrator', text:'ミナトは少し黙って、それから小さく笑う。'},
+    {speakerKey:'minato', text:'「…だよな。」'},
+    {speakerKey:'haru', text:'「じゃあ、なんとかしよう。」'},
+    {speakerKey:'minato', text:'「なんとかって、具材もう決まってるけど。」'},
+    {speakerKey:'haru', text:'「決まってるなら、変えればいいだけじゃない？」'},
+    {speakerKey:'haru', text:'「そういえばこれ、まだ触ってなくない？」'},
+    {speakerKey:'narrator', text:'箱の底に残っていた、小さな紙の封筒。'},
+    {speakerKey:'minato', text:'「なんかまだ何か仕込まれてそう、このキット。」'},
+    {speakerKey:'natsu', text:'「開けてみよ。」'},
+    {speakerKey:'narrator', text:'封筒の中には、一枚の紙。何かの手がかりが記されている。'},
+    {speakerKey:'haru', text:'「これ、解けって書いてある、ってことだよね。」'},
+    {speakerKey:'minato', text:'「他に読み方ある？」'}
   ],
 
+  // 封筒の謎に正解し、カードの操作へ移った直後。
   afterTurn: [
-    {speakerKey:'narrator', text:'封筒の中の謎から分かったのは、取り皿の上にあるカードを回すことだった。'},
-    {speakerKey:'player', text:'「この向きまで回す……ってことかな。」'},
-    {speakerKey:'haru', text:'「やってみよう。」'},
-    {speakerKey:'narrator', text:'4枚のカードをそれぞれ回す。すると、カードと取り皿の絵柄がつながり、今までとは違う方向へ続く形が現れた。'},
-    {speakerKey:'natsu', text:'「あ、これ。隣に渡すんじゃない？」'},
-    {speakerKey:'minato', text:'「4枚とも行き先が出てる。なら、そういうことだな。」'},
-    {speakerKey:'narrator', text:'カードだけが、ひとつ隣の取り皿へ移る。取り皿も鍋も、元の場所からは動いていない。それでも、テーブルの見え方は確かに変わった。'}
+    {speakerKey:'narrator', text:'謎を解くと、カードの回し方が分かる。'},
+    {speakerKey:'natsu', text:'「これ、回るんだ。」'},
+    {speakerKey:'narrator', text:'実際に回してみると、カード上のビジュアルが変化する。'},
+    {speakerKey:'minato', text:'「え、待って。これ、隣に置くやつじゃない？」'},
+    {speakerKey:'haru', text:'「あ、ほんとだ。矢印っぽくなった。」'},
+    {speakerKey:'narrator', text:'四枚のカードが、それぞれ隣の取り皿へと移動する。'},
+    {speakerKey:'natsu', text:'「これでいいってこと？」'},
+    {speakerKey:'minato', text:'「多分。」'}
   ],
 
+  // カード移動後、A〜D由来の4食材が変わった直後。
   afterSecond4: [
-    {speakerKey:'natsu', text:'「え。きゅうりだけじゃない。」'},
-    {speakerKey:'player', text:'「4つとも違う食材になった。」'},
-    {speakerKey:'minato', text:'「カードの位置が変わって、問題も読む場所も変わったからか。」'},
-    {speakerKey:'haru', text:'「……このカード、さっき4人で使った3問にも使ったよね。」'},
-    {speakerKey:'natsu', text:'「あ。」'},
-    {speakerKey:'minato', text:'「そこも今のカードで見るなら、同じ答えにはならないかもしれない。」'},
-    {speakerKey:'player', text:'「じゃあ、そっちも確かめよう。」'}
+    {speakerKey:'narrator', text:'カードを移動したことで、A〜Dの答えのうち一問ずつ結果が変わり、盤面の読み位置も変化する。'},
+    {speakerKey:'natsu', text:'「え、待って、④の場所変わってない？」'},
+    {speakerKey:'minato', text:'「カード動かしたから盤面変わったってこと？」'},
+    {speakerKey:'haru', text:'「うわ、ほんとだ。食材、変わってる。」'},
+    {speakerKey:'narrator', text:'先ほどまでとは違う4つの言葉が、盤面に浮かんでいる。'},
+    {speakerKey:'player', text:'「これ、きゅうり消えてる。」'},
+    {speakerKey:'minato', text:'「……ほんとだ。」'},
+    {speakerKey:'natsu', text:'「じゃあこれで解決？」'},
+    {speakerKey:'haru', text:'「待って、まだ3つ残ってる。」'},
+    {speakerKey:'minato', text:'「あ。」'},
+    {speakerKey:'natsu', text:'「どうした。」'},
+    {speakerKey:'minato', text:'「あのカード、さっきの共通の問題でも使ったよね。」'},
+    {speakerKey:'haru', text:'「ってことは。」'},
+    {speakerKey:'natsu', text:'「もう一回解けってこと？」'},
+    {speakerKey:'minato', text:'「多分、そういうこと。」'}
   ],
 
+  // 共通3問を解き直し、7食材すべてが変わった直後。
   afterSecond7: [
-    {speakerKey:'narrator', text:'新しくそろった7つは、大根、しいたけ、豚肉、人参、白菜、もつ、もやし。'},
-    {speakerKey:'natsu', text:'「鍋だ！」'},
-    {speakerKey:'minato', text:'「ようやく名詞として安心できる並びになった。」'},
-    {speakerKey:'haru', text:'「ミナト、これは全部大丈夫？」'},
-    {speakerKey:'minato', text:'「問題ない。」'},
-    {speakerKey:'natsu', text:'「じゃあ入れよう。」'},
-    {speakerKey:'minato', text:'「まだ。最後の言葉が残ってる。」'},
-    {speakerKey:'natsu', text:'「今日いちばん鍋を待ってるの、ミナトじゃん。」'},
-    {speakerKey:'minato', text:'「だから順番を守ってる。」'},
-    {speakerKey:'haru', text:'「ふふ。じゃあ、もう一回だけ。」'}
+    {speakerKey:'narrator', text:'三問を解き直すと、残り3つの食材も入れ替わる。'},
+    {speakerKey:'haru', text:'「これで、七つ全部変わった。」'},
+    {speakerKey:'natsu', text:'「最初のとは、もう別の鍋じゃん。」'},
+    {speakerKey:'minato', text:'「じゃあ、もう一回。」'},
+    {speakerKey:'narrator', text:'最終問題自体は、見た目もルールも先ほどと全く同じ。持ち込む7食材だけが違う。'}
   ],
 
+  // 「だんけつ」正解後〜エンディング。
   clear: [
-    {speakerKey:'minato', text:'「……だんけつ。」'},
-    {speakerKey:'natsu', text:'「おお。」'},
-    {speakerKey:'haru', text:'「今度は、ちゃんと鍋っぽいね。」'},
-    {speakerKey:'natsu', text:'「じゃ、作ろ。」'},
-    {speakerKey:'minato', text:'「肉ともつはちゃんと火を通せ。」'},
-    {speakerKey:'natsu', text:'「余韻が一秒だった。」'},
-    {speakerKey:'player', text:'「でもそこは大事。」'},
-    {speakerKey:'narrator', text:'やがて鍋から湯気が上がる。誰かが具材を足し、誰かが器を寄せ、誰かがポン酢を探す。'},
+    {speakerKey:'narrator', text:'文字が浮かぶ。'},
+    {speakerKey:'narrator', text:'だ ん け つ'},
+    {speakerKey:'minato', text:'「…だんけつ、って出た。」'},
+    {speakerKey:'narrator', text:'少しの間、誰も何も言わなかった。'},
+    {speakerKey:'natsu', text:'「なんか、ちゃんと四人で解いた感じする。」'},
+    {speakerKey:'haru', text:'「うん。」'},
+    {speakerKey:'minato', text:'「まあ、悪くない。」'},
+    {speakerKey:'narrator', text:'実際に鍋を作り始める四人。'},
     {speakerKey:'minato', text:'「それ、まだ煮えてない。」'},
-    {speakerKey:'natsu', text:'「分かってるって。」'},
-    {speakerKey:'haru', text:'「ポン酢、こっち。」'},
+    {speakerKey:'natsu', text:'「肉ちゃんと火通して。」'},
+    {speakerKey:'haru', text:'「誰かポン酢取って。」'},
     {speakerKey:'player', text:'「熱っ。」'},
-    {speakerKey:'haru', text:'「……なんか今日、久しぶりに高校の頃みたいだったな。」'},
-    {speakerKey:'natsu', text:'「また集まろうよ。普通に。」'},
-    {speakerKey:'minato', text:'「次は普通の鍋で。」'},
-    {speakerKey:'natsu', text:'「そこは考えとく。」'},
-    {speakerKey:'narrator', text:'学生の頃みたいに、いつでも集まれるわけじゃない。それでも、同じ食卓を囲む時間は、また作れる。'}
+    {speakerKey:'narrator', text:'湯気の向こうで、四人が笑っている。'},
+    {speakerKey:'haru', text:'「なんか今日、久しぶりに高校の頃みたいだったな。」'},
+    {speakerKey:'natsu', text:'「また集まろうよ、普通に。」'},
+    {speakerKey:'minato', text:'「普通にって、また変なキット持ってくるつもりだろ。」'},
+    {speakerKey:'natsu', text:'「バレた。」'},
+    {speakerKey:'narrator', text:'鍋を囲む四人の声が、静かに続いていく。'}
   ]
 };

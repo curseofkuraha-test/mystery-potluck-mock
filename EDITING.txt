@@ -1,4 +1,4 @@
-ミステリーポットラック Webモック v7 編集メモ
+ミステリーポットラック Webモック v8 編集メモ
 
 ■ 主な編集ファイル
 story-data.js
@@ -14,7 +14,7 @@ answer-data.js
 answers.txt
   正解一覧の人間確認用。
 
-■ v7のストーリー前提
+■ v8のストーリー前提
 ・市販の福袋型闇鍋キットをナツが持参。
 ・ハルの誕生日。
 ・きゅうりを強く苦手としているのはミナト。
@@ -25,10 +25,16 @@ answers.txt
 ・「だんけつ」の意味をキャラに説明させすぎない。
 
 ■ セッション保存
-sessionStorageを使用。v7ではキー mysteryPotluckV7Session。
+sessionStorageを使用。v8ではキー mysteryPotluckV7Session。
 同じタブ内のリロードでは、名前・途中入力・正解状況を保持。
 
 ■ モック上の仮部分
 stage-turn の小封筒は物理封筒の代替表示。
 実制作ではWebに封筒そのものを表示する必要はなく、物理同梱物を使用する想定。
 turnStep の仮正解は「まわす」。実際の追加謎確定時に answer-data.js と併せて変更する。
+
+[v8 ストーリー]
+- story-data.js は指定の「通しセリフ台本」を基準に差し替え済みです。
+- 4食材→共通3問の境目に合わせ、台本3章を afterFirst4 / afterFirst7 に分割しています。
+- 前半脱線会話は story-data.js の interludes に保存しています。現時点では自動挿入していません。
+- 台本中の {player} は実装上 {{player}} として保存し、入力名へ置換します。
