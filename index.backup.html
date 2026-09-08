@@ -21,11 +21,11 @@
           <p><strong>2.</strong> “鍋”の解答欄は机の中央に置き、途中で回さないでください。必要な方向へ、見る人が移動してください。</p>
           <p><strong>3.</strong> 正解した解答欄は自動で確定し、再送信できなくなります。必要な答えがそろうと次のステップが開きます。</p>
           <p><strong>4.</strong> 未解放のステップは表示されません。今見えている情報だけで進めてください。</p>
-          <p><strong>5.</strong> 進行状況は、このタブを開いている間だけ保存されます。リロードしても続きから再開できます。</p>
+          <p><strong>5.</strong> 進行状況はこのブラウザ内に保存されます。</p>
         </div>
         <div class="onboarding-actions">
           <button class="primary-button" id="toNameStep" type="button">つぎへ</button>
-          <button class="text-button" id="resetProgress" type="button">このタブの進行をリセット</button>
+          <button class="text-button" id="resetProgress" type="button">進行状況をリセット</button>
         </div>
       </div>
     </section>
@@ -78,9 +78,9 @@
       <section class="chapter chapter-light" id="stage-1" data-stage="1">
         <div class="chapter-index">01</div>
         <div class="chapter-copy">
-          <p class="chapter-kicker" data-ui="stage1.kicker"></p>
-          <h2 data-ui="stage1.title"></h2>
-          <p data-ui="stage1.body"></p>
+          <p class="chapter-kicker">4 DIRECTIONS / 4 INGREDIENTS</p>
+          <h2>まずは、4つの食材を見つけよう。</h2>
+          <p>4方向からそれぞれ7問。導いた答えを“鍋”に入れ、各方向の指定位置を読んで食材を導こう。</p>
         </div>
         <div class="answer-grid answer-grid-4" data-answer-group="first4">
           <article class="answer-panel side-a"><div class="side-mark">A</div><label for="a1">Aの食材</label><div class="answer-row"><input id="a1" autocomplete="off" placeholder="こたえを入力"><button data-check="a1">CHECK</button></div><p class="feedback" id="fb-a1"></p></article>
@@ -92,7 +92,7 @@
 
       <section class="chapter chapter-dark stage-hidden" id="stage-2" aria-hidden="true">
         <div class="chapter-index">02</div>
-        <div class="chapter-copy"><p class="chapter-kicker" data-ui="stage2.kicker"></p><h2 data-ui="stage2.title"></h2><p data-ui="stage2.body"></p></div>
+        <div class="chapter-copy"><p class="chapter-kicker">TOGETHER / 3 MORE</p><h2>残る3つは、みんなで。</h2><p>4枚の手がかりを使い、共通の3問から追加食材を導こう。</p></div>
         <div class="answer-grid answer-grid-3" data-answer-group="first3">
           <article class="answer-panel compact"><div class="side-mark">E</div><label for="e1">共通食材 1</label><div class="answer-row"><input id="e1" autocomplete="off" placeholder="こたえ"><button data-check="e1">CHECK</button></div><p class="feedback" id="fb-e1"></p></article>
           <article class="answer-panel compact"><div class="side-mark">F</div><label for="f1">共通食材 2</label><div class="answer-row"><input id="f1" autocomplete="off" placeholder="こたえ"><button data-check="f1">CHECK</button></div><p class="feedback" id="fb-f1"></p></article>
@@ -102,51 +102,51 @@
 
       <section class="chapter chapter-accent stage-hidden" id="stage-3" aria-hidden="true">
         <div class="chapter-index">03</div>
-        <div class="chapter-copy"><p class="chapter-kicker" data-ui="stage3.kicker"></p><h2 data-ui="stage3.title"></h2><p data-ui="stage3.body"></p></div>
+        <div class="chapter-copy"><p class="chapter-kicker">FINAL WORD / ROUND 1</p><h2>この鍋の行方を示す言葉は？</h2><p>7つの食材を使って、最後の謎を解こう。</p></div>
         <div class="final-entry"><input id="darkFinal" autocomplete="off" placeholder="最終回答"><button data-check="darkFinal">ANSWER</button><p class="feedback" id="fb-darkFinal"></p></div>
       </section>
 
       <section class="chapter chapter-turn stage-hidden" id="stage-turn" aria-hidden="true">
         <div class="chapter-index">04</div>
-        <div class="chapter-copy"><p class="chapter-kicker" data-ui="turn.kicker"></p><h2 data-ui="turn.title"></h2><p data-ui="turn.body"></p></div>
+        <div class="chapter-copy"><p class="chapter-kicker">TURNING POINT</p><h2>4人で同じ鍋を囲む方法を探そう。</h2><p>このままでは4人で同じ鍋を囲めない。手元の情報を使い、状況を変える方法を導こう。</p></div>
         <div class="turn-demo" aria-label="カード回転の仮図">
           <div class="plate-demo"><div class="plate-pattern">●　▲　■　◆</div><div class="card-demo">CARD <span>↻</span></div></div>
-          <p data-ui="turn.demo"></p>
+          <p>導いた図が示す動きを、実物の取り皿とカードで確かめよう。</p>
         </div>
-        <div class="final-entry"><input id="turnStep" autocomplete="off" placeholder="こたえを入力"><button data-check="turnStep">ANSWER</button><p class="feedback" id="fb-turnStep"></p></div>
+        <div class="final-entry"><input id="turnStep" autocomplete="off" placeholder="仮回答"><button data-check="turnStep">ANSWER</button><p class="feedback" id="fb-turnStep"></p></div>
       </section>
 
       <section class="chapter chapter-light stage-hidden" id="stage-4" aria-hidden="true">
         <div class="chapter-index">05</div>
-        <div class="chapter-copy"><p class="chapter-kicker" data-ui="stage4.kicker"></p><h2 data-ui="stage4.title"></h2><p data-ui="stage4.body"></p></div>
+        <div class="chapter-copy"><p class="chapter-kicker">SECOND STATE / 4 INGREDIENTS</p><h2>もう一度、4方向の答えを確かめよう。</h2><p>カードを移動した状態で、これまでカードを使った問題をもう一度確かめよう。</p></div>
         <div class="answer-grid answer-grid-4" data-answer-group="second4">
-          <article class="answer-panel side-a"><div class="side-mark">A</div><label for="a2">Aの食材</label><div class="answer-row"><input id="a2" autocomplete="off" placeholder="こたえ"><button data-check="a2">CHECK</button></div><p class="feedback" id="fb-a2"></p></article>
-          <article class="answer-panel side-b"><div class="side-mark">B</div><label for="b2">Bの食材</label><div class="answer-row"><input id="b2" autocomplete="off" placeholder="こたえ"><button data-check="b2">CHECK</button></div><p class="feedback" id="fb-b2"></p></article>
-          <article class="answer-panel side-c"><div class="side-mark">C</div><label for="c2">Cの食材</label><div class="answer-row"><input id="c2" autocomplete="off" placeholder="こたえ"><button data-check="c2">CHECK</button></div><p class="feedback" id="fb-c2"></p></article>
-          <article class="answer-panel side-d"><div class="side-mark">D</div><label for="d2">Dの食材</label><div class="answer-row"><input id="d2" autocomplete="off" placeholder="こたえ"><button data-check="d2">CHECK</button></div><p class="feedback" id="fb-d2"></p></article>
+          <article class="answer-panel side-a"><div class="side-mark">A</div><label for="a2">Aの新しい食材</label><div class="answer-row"><input id="a2" autocomplete="off" placeholder="こたえ"><button data-check="a2">CHECK</button></div><p class="feedback" id="fb-a2"></p></article>
+          <article class="answer-panel side-b"><div class="side-mark">B</div><label for="b2">Bの新しい食材</label><div class="answer-row"><input id="b2" autocomplete="off" placeholder="こたえ"><button data-check="b2">CHECK</button></div><p class="feedback" id="fb-b2"></p></article>
+          <article class="answer-panel side-c"><div class="side-mark">C</div><label for="c2">Cの新しい食材</label><div class="answer-row"><input id="c2" autocomplete="off" placeholder="こたえ"><button data-check="c2">CHECK</button></div><p class="feedback" id="fb-c2"></p></article>
+          <article class="answer-panel side-d"><div class="side-mark">D</div><label for="d2">Dの新しい食材</label><div class="answer-row"><input id="d2" autocomplete="off" placeholder="こたえ"><button data-check="d2">CHECK</button></div><p class="feedback" id="fb-d2"></p></article>
         </div>
       </section>
 
       <section class="chapter chapter-dark stage-hidden" id="stage-5" aria-hidden="true">
         <div class="chapter-index">06</div>
-        <div class="chapter-copy"><p class="chapter-kicker" data-ui="stage5.kicker"></p><h2 data-ui="stage5.title"></h2><p data-ui="stage5.body"></p></div>
+        <div class="chapter-copy"><p class="chapter-kicker">TOGETHER AGAIN / 3 MORE</p><h2>残る3つも、もう一度。</h2><p>移動した4枚のカードを使い、共通の3問ももう一度解こう。</p></div>
         <div class="answer-grid answer-grid-3" data-answer-group="second3">
-          <article class="answer-panel compact"><div class="side-mark">E</div><label for="e2">食材 1</label><div class="answer-row"><input id="e2" autocomplete="off" placeholder="こたえ"><button data-check="e2">CHECK</button></div><p class="feedback" id="fb-e2"></p></article>
-          <article class="answer-panel compact"><div class="side-mark">F</div><label for="f2">食材 2</label><div class="answer-row"><input id="f2" autocomplete="off" placeholder="こたえ"><button data-check="f2">CHECK</button></div><p class="feedback" id="fb-f2"></p></article>
-          <article class="answer-panel compact"><div class="side-mark">G</div><label for="g2">食材 3</label><div class="answer-row"><input id="g2" autocomplete="off" placeholder="こたえ"><button data-check="g2">CHECK</button></div><p class="feedback" id="fb-g2"></p></article>
+          <article class="answer-panel compact"><div class="side-mark">E</div><label for="e2">新・共通食材 1</label><div class="answer-row"><input id="e2" autocomplete="off" placeholder="こたえ"><button data-check="e2">CHECK</button></div><p class="feedback" id="fb-e2"></p></article>
+          <article class="answer-panel compact"><div class="side-mark">F</div><label for="f2">新・共通食材 2</label><div class="answer-row"><input id="f2" autocomplete="off" placeholder="こたえ"><button data-check="f2">CHECK</button></div><p class="feedback" id="fb-f2"></p></article>
+          <article class="answer-panel compact"><div class="side-mark">G</div><label for="g2">新・共通食材 3</label><div class="answer-row"><input id="g2" autocomplete="off" placeholder="こたえ"><button data-check="g2">CHECK</button></div><p class="feedback" id="fb-g2"></p></article>
         </div>
       </section>
 
       <section class="chapter chapter-accent stage-hidden" id="stage-6" aria-hidden="true">
         <div class="chapter-index">07</div>
-        <div class="chapter-copy"><p class="chapter-kicker" data-ui="stage6.kicker"></p><h2 data-ui="stage6.title"></h2><p data-ui="stage6.body"></p></div>
+        <div class="chapter-copy"><p class="chapter-kicker">FINAL WORD / ROUND 2</p><h2>同じ最後の謎を、もう一度。</h2><p>問題は同じ。変わったのは、ここまで積み上げたもの。</p></div>
         <div class="final-entry"><input id="clearFinal" autocomplete="off" placeholder="最終回答"><button data-check="clearFinal">ANSWER</button><p class="feedback" id="fb-clearFinal"></p></div>
       </section>
 
       <section class="credits stage-hidden" id="credits" aria-hidden="true">
         <video class="credits-bg" autoplay muted loop playsinline poster="./assets/credits-poster-placeholder.jpg"><source src="./assets/credits-placeholder.mp4" type="video/mp4"></video>
         <div class="credits-overlay"></div>
-        <div class="credits-content"><p class="clear-mark">CLEAR</p><h2>だんけつ</h2><p class="credits-lead" data-ui="credits.lead"></p><div class="roll"><p>MYSTERY POTLUCK - YA MI NA BE -</p><p>Planning / Story / Puzzle Design</p><p>YOUR TEAM</p><p class="roll-gap">SPECIAL THANKS</p><p>PLAYERS WHO GATHER AROUND THE POT</p></div></div>
+        <div class="credits-content"><p class="clear-mark">CLEAR</p><h2>だんけつ</h2><p class="credits-lead">なんだか、鍋が食べたくなってきませんか？</p><div class="roll"><p>MYSTERY POTLUCK - YA MI NA BE -</p><p>Planning / Story / Puzzle Design</p><p>YOUR TEAM</p><p class="roll-gap">SPECIAL THANKS</p><p>PLAYERS WHO GATHER AROUND THE POT</p></div></div>
       </section>
     </main>
 
@@ -161,7 +161,6 @@
   </div>
 
   <script src="./answer-data.js"></script>
-  <script src="./ui-data.js"></script>
   <script src="./story-data.js"></script>
   <script src="./script.js"></script>
 </body>

@@ -1,5 +1,6 @@
 const answerMap = window.MYSTERY_POTLUCK_ANSWERS || {};
 const storyConfig = window.MYSTERY_POTLUCK_STORY || {characters:{}, intro:[]};
+const uiConfig = window.MYSTERY_POTLUCK_UI || {};
 
 const groups = {
   first4: ['a1','b1','c1','d1'],
@@ -8,31 +9,35 @@ const groups = {
   second3: ['e2','f2','g2']
 };
 
-const STORAGE_KEY = 'mysteryPotluckV3';
+const STORAGE_KEY = 'mysteryPotluckV4Session';
 const blankState = () => Object.fromEntries(Object.keys(answerMap).map(k => [k,false]));
 let state = blankState();
 let fired = new Set();
 let player = { name:'あなた', romaji:'YOU', initial:'Y' };
+let drafts = {};
+let onboardingPage = 'notice';
 
 function loadSave(){
   try{
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = sessionStorage.getItem(STORAGE_KEY);
     if(!raw) return null;
     return JSON.parse(raw);
   }catch(_){ return null; }
 }
 function saveProgress(){
   try{
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-      started:true,
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
+      started: document.getElementById('gameShell') ? !document.getElementById('gameShell').hidden : false,
       player,
       state,
-      fired:[...fired]
+      fired:[...fired],
+      drafts,
+      onboardingPage
     }));
   }catch(_){ /* 保存不可環境ではセッション内のみ継続 */ }
 }
 function clearSave(){
-  try{ localStorage.removeItem(STORAGE_KEY); }catch(_){ }
+  try{ sessionStorage.removeItem(STORAGE_KEY); }catch(_){ }
   location.reload();
 }
 
@@ -101,6 +106,7 @@ function checkAnswer(id){
   if(!ok) return;
 
   state[id] = true;
+  drafts[id] = input.value;
   lockCorrectField(id);
   saveProgress();
 
@@ -146,6 +152,38 @@ function checkAnswer(id){
       openStory('clear', ()=>scrollToStage('credits'));
     });
   }
+}
+
+// ----- 画面コピー / 入力途中の保存 -----
+function getUi(path){
+  return path.split('.').reduce((obj,key)=>obj?.[key], uiConfig);
+}
+function hydrateUiCopy(){
+  document.querySelectorAll('[data-ui]').forEach(el=>{
+    const value=getUi(el.dataset.ui);
+    if(typeof value==='string') el.textContent=value;
+  });
+}
+function saveDraft(id,value){
+  drafts[id]=String(value ?? '');
+  saveProgress();
+}
+function restoreDrafts(){
+  Object.entries(drafts || {}).forEach(([id,value])=>{
+    const input=document.getElementById(id);
+    if(input) input.value=String(value ?? '');
+  });
+}
+function bindDraftInputs(){
+  document.querySelectorAll('#gameShell input').forEach(input=>{
+    input.addEventListener('input',()=>saveDraft(input.id,input.value));
+  });
+  const nameInput=document.getElementById('playerName');
+  nameInput?.addEventListener('input',()=>{
+    drafts.playerName=nameInput.value;
+    onboardingPage='name';
+    saveProgress();
+  });
 }
 
 // ----- 名前入力 -----
@@ -231,17 +269,20 @@ function updateNamePreview(){
 }
 
 function showOnboardingPage(name){
+  onboardingPage=name;
   document.querySelectorAll('.onboarding-page').forEach(page=>{
     const on=page.dataset.onboardingPage===name;
     page.classList.toggle('is-active',on);
     page.setAttribute('aria-hidden', String(!on));
   });
+  saveProgress();
 }
 function beginGame(isNew){
   document.getElementById('onboarding').classList.add('is-hidden');
   const shell=document.getElementById('gameShell');
   shell.hidden=false;
   restoreVisibleProgress();
+  restoreDrafts();
   if(isNew){
     fired.add('intro');
     saveProgress();
@@ -265,6 +306,7 @@ document.getElementById('startGame').addEventListener('click',()=>{
   setPlayerName(raw);
   state=blankState();
   fired=new Set();
+  drafts={playerName: player.name};
   saveProgress();
   beginGame(true);
 });
@@ -329,13 +371,24 @@ storyNext.addEventListener('click',()=>{
 document.querySelectorAll('[data-close-story]').forEach(el=>el.addEventListener('click',closeStory));
 
 // ----- 起動 -----
+hydrateUiCopy();
 const saved=loadSave();
-if(saved?.started && saved.player?.name && isKanaName(saved.player.name)){
-  player=saved.player;
+if(saved){
+  if(saved.player?.name && isKanaName(saved.player.name)) player=saved.player;
   state={...blankState(), ...(saved.state||{})};
   fired=new Set(saved.fired||[]);
+  drafts={...(saved.drafts||{})};
+  onboardingPage=saved.onboardingPage || 'notice';
+}
+bindDraftInputs();
+if(saved?.started && player?.name && isKanaName(player.name)){
   beginGame(false);
 }else{
   document.getElementById('gameShell').hidden=true;
-  showOnboardingPage('notice');
+  const nameDraft=drafts.playerName || '';
+  if(nameDraft){
+    document.getElementById('playerName').value=nameDraft;
+    updateNamePreview();
+  }
+  showOnboardingPage(onboardingPage === 'name' ? 'name' : 'notice');
 }
