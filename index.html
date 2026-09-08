@@ -32,13 +32,13 @@
 
     <section class="onboarding-page" data-onboarding-page="name" aria-hidden="true">
       <div class="onboarding-card name-card">
-        <p class="eyebrow">PLAYER NAME</p>
+        <p class="eyebrow">YOUR NAME</p>
         <h2 class="onboarding-title">あなたの名前を入力してください</h2>
         <p class="name-note">仮名6文字以内で入力してください。<br><span>※ハンドルネームも可能です。</span></p>
         <label class="name-label" for="playerName">なまえ</label>
         <div class="name-entry">
           <input id="playerName" type="text" maxlength="6" autocomplete="off" inputmode="text" placeholder="例：ユウ" aria-describedby="nameError">
-          <button class="primary-button" id="startGame" type="button">ゲーム開始</button>
+          <button class="primary-button" id="startGame" type="button">はじめる</button>
         </div>
         <p class="name-error" id="nameError" role="alert"></p>
         <div class="name-preview" id="namePreview" aria-hidden="true">
@@ -109,9 +109,8 @@
       <section class="chapter chapter-turn stage-hidden" id="stage-turn" aria-hidden="true">
         <div class="chapter-index">04</div>
         <div class="chapter-copy"><p class="chapter-kicker" data-ui="turn.kicker"></p><h2 data-ui="turn.title"></h2><p data-ui="turn.body"></p></div>
-        <div class="turn-demo" aria-label="カード回転の仮図">
-          <div class="plate-demo"><div class="plate-pattern">●　▲　■　◆</div><div class="card-demo">CARD <span>↻</span></div></div>
-          <p data-ui="turn.demo"></p>
+        <div class="turn-puzzle-placeholder" aria-label="追加問題の仮表示">
+          <p>［ここに追加問題が表示されます］</p>
         </div>
         <div class="final-entry"><input id="turnStep" autocomplete="off" placeholder="こたえを入力"><button data-check="turnStep">ANSWER</button><p class="feedback" id="fb-turnStep"></p></div>
       </section>
@@ -154,8 +153,8 @@
       <div class="story-backdrop" data-close-story></div>
       <div class="story-sheet" role="dialog" aria-modal="true" aria-labelledby="storySpeaker">
         <button class="story-close" type="button" data-close-story aria-label="閉じる">×</button>
-        <div class="portrait" id="storyPortrait"><span class="portrait-initial" id="portraitInitial">!</span></div>
-        <div class="story-body"><p class="story-speaker" id="storySpeaker">SYSTEM</p><div class="story-text" id="storyText"></div><button class="story-next" id="storyNext">NEXT</button></div>
+        <div class="portrait" id="storyPortrait"><span class="portrait-initial" id="portraitInitial"></span></div>
+        <div class="story-body"><p class="story-speaker" id="storySpeaker"></p><div class="story-text" id="storyText"></div><button class="story-next" id="storyNext">NEXT</button></div>
       </div>
     </div>
   </div>

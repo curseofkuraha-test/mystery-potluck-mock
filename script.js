@@ -9,7 +9,7 @@ const groups = {
   second3: ['e2','f2','g2']
 };
 
-const STORAGE_KEY = 'mysteryPotluckV4Session';
+const STORAGE_KEY = 'mysteryPotluckV5Session';
 const blankState = () => Object.fromEntries(Object.keys(answerMap).map(k => [k,false]));
 let state = blankState();
 let fired = new Set();
@@ -270,6 +270,8 @@ function updateNamePreview(){
 
 function showOnboardingPage(name){
   onboardingPage=name;
+  document.body.classList.toggle('is-name-entry', name==='name');
+  if(name==='name') window.scrollTo(0,0);
   document.querySelectorAll('.onboarding-page').forEach(page=>{
     const on=page.dataset.onboardingPage===name;
     page.classList.toggle('is-active',on);
@@ -278,6 +280,7 @@ function showOnboardingPage(name){
   saveProgress();
 }
 function beginGame(isNew){
+  document.body.classList.remove('is-name-entry');
   document.getElementById('onboarding').classList.add('is-hidden');
   const shell=document.getElementById('gameShell');
   shell.hidden=false;
@@ -334,7 +337,7 @@ function template(text){
     .replaceAll('{{playerInitial}}', player.initial);
 }
 function characterFor(key){
-  return storyConfig.characters?.[key] || storyConfig.characters?.system || {display:'SYSTEM',initial:'!',tone:'system',human:false};
+  return storyConfig.characters?.[key] || storyConfig.characters?.narrator || {display:'',initial:'',tone:'narrator',human:false,narrator:true};
 }
 function openStory(key,onClose=null){
   const arr=storyConfig[key];
@@ -352,8 +355,9 @@ function renderStory(){
   storySpeaker.textContent=template(ch.display);
   storyText.textContent=template(item.text); // HTMLとして解釈しない
   portraitInitial.textContent=template(ch.initial);
-  storyPortrait.dataset.tone=ch.tone || 'system';
+  storyPortrait.dataset.tone=ch.tone || 'narrator';
   storyPortrait.dataset.human=String(Boolean(ch.human));
+  document.querySelector('.story-sheet')?.classList.toggle('is-narration', Boolean(ch.narrator));
   storyNext.textContent=currentIndex===storyConfig[currentStory].length-1?'CLOSE':'NEXT';
 }
 function closeStory(){
