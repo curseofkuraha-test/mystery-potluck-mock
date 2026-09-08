@@ -9,7 +9,7 @@ const groups = {
   second3: ['e2','f2','g2']
 };
 
-const STORAGE_KEY = 'mysteryPotluckV5Session';
+const STORAGE_KEY = 'mysteryPotluckV7Session';
 const blankState = () => Object.fromEntries(Object.keys(answerMap).map(k => [k,false]));
 let state = blankState();
 let fired = new Set();
@@ -357,7 +357,9 @@ function renderStory(){
   portraitInitial.textContent=template(ch.initial);
   storyPortrait.dataset.tone=ch.tone || 'narrator';
   storyPortrait.dataset.human=String(Boolean(ch.human));
-  document.querySelector('.story-sheet')?.classList.toggle('is-narration', Boolean(ch.narrator));
+  const sheet=document.querySelector('.story-sheet');
+  sheet?.classList.toggle('is-narration', Boolean(ch.narrator));
+  if(sheet) sheet.dataset.speakerTone=ch.tone || 'narrator';
   storyNext.textContent=currentIndex===storyConfig[currentStory].length-1?'CLOSE':'NEXT';
 }
 function closeStory(){
