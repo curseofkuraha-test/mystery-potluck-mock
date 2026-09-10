@@ -1,5 +1,5 @@
 /*
-  ストーリーデータ v8
+  ストーリーデータ v9
   ユーザー指定の「通しセリフ台本」をWEB進行用に分割したものです。
   speakerKey: player / natsu / minato / haru / narrator
   narrator は話者名・人物アイコンを表示しない地の文です。
@@ -18,15 +18,23 @@ window.MYSTERY_POTLUCK_STORY = {
     {speakerKey:'narrator', text:'玄関で靴を脱ぐなり、ナツがリュックから何か取り出した。'},
     {speakerKey:'natsu', text:'「見て見て、これ。」'},
     {speakerKey:'minato', text:'「何それ。」'},
-    {speakerKey:'natsu', text:'「福袋みたいなやつなんだけど、開けるだけじゃなくて、謎解いた分だけ具材が決まるらしくて。おもしろそうだったから買った。」'},
-    {speakerKey:'minato', text:'「絶対面倒くさいやつじゃん、それ。」'},
-    {speakerKey:'natsu', text:'「面倒くさいのが楽しいんだよ。」'},
-    {speakerKey:'haru', text:'「（笑いながら）いいじゃん、せっかくだし。誕生日にちょうどいい。」'},
+    {speakerKey:'natsu', text:'「鍋占いだって。今夜食べる鍋の具材、占いで決めるんだって。」'},
+    {speakerKey:'minato', text:'「決めるって、自分たちで決めないの？」'},
+    {speakerKey:'natsu', text:'「うん。運に任せるタイプの占いらしい。ハル誕生日じゃん。せっかくだから今日の運、鍋で占おうよ。」'},
+    {speakerKey:'haru', text:'「（笑いながら）いいじゃん、それ。」'},
+    {speakerKey:'minato', text:'「占いにしては手順多くない？」'},
+    {speakerKey:'natsu', text:'「そこがいいんだって。」'},
     {speakerKey:'minato', text:'「お前が言うなら、まあ。」'},
-    {speakerKey:'narrator', text:'四人分の椅子が、テーブルの四辺に引かれる。箱の中には、紙の鍋と、四枚のカードが入っていた。'},
-    {speakerKey:'natsu', text:'「{{player}}もほら、座って座って。」'},
-    {speakerKey:'haru', text:'「じゃ、開けよっか。」'},
-    {speakerKey:'narrator', text:'箱の底に、小さな紙の封筒がもう一つ入っていることに、この時点では誰も気づいていない。'}
+    {speakerKey:'narrator', text:'四人分の椅子が、テーブルの四辺に引かれる。箱の中には、紙の鍋と、四枚のカード。それから、念のためらしい、小さな占い札が一枚。'},
+    {speakerKey:'natsu', text:'「これは、まあ、予備でしょ。」'},
+    {speakerKey:'minato', text:'「使うのか、それ。」'},
+    {speakerKey:'natsu', text:'「さあ。」'},
+    {speakerKey:'haru', text:'「じゃ、占っていこっか。」'},
+    {speakerKey:'narrator', text:'問題を開いた瞬間、ナツが声を上げる。'},
+    {speakerKey:'natsu', text:'「これ、一問二問で終わるやつじゃないじゃん。」'},
+    {speakerKey:'minato', text:'「随分めんどくさい占いだな。」'},
+    {speakerKey:'natsu', text:'「ちゃんと占った方が当たりそうじゃん。」'},
+    {speakerKey:'player', text:'「じゃ、やりますか。」'}
   ],
 
   // 28問進行中に任意で挿入する脱線会話ストック。現モックでは自動表示しません。
@@ -94,20 +102,21 @@ window.MYSTERY_POTLUCK_STORY = {
     {speakerKey:'minato', text:'「…だよな。」'},
     {speakerKey:'haru', text:'「じゃあ、なんとかしよう。」'},
     {speakerKey:'minato', text:'「なんとかって、具材もう決まってるけど。」'},
-    {speakerKey:'haru', text:'「決まってるなら、変えればいいだけじゃない？」'},
-    {speakerKey:'haru', text:'「そういえばこれ、まだ触ってなくない？」'},
-    {speakerKey:'narrator', text:'箱の底に残っていた、小さな紙の封筒。'},
-    {speakerKey:'minato', text:'「なんかまだ何か仕込まれてそう、このキット。」'},
-    {speakerKey:'natsu', text:'「開けてみよ。」'},
-    {speakerKey:'narrator', text:'封筒の中には、一枚の紙。何かの手がかりが記されている。'},
-    {speakerKey:'haru', text:'「これ、解けって書いてある、ってことだよね。」'},
-    {speakerKey:'minato', text:'「他に読み方ある？」'}
+    {speakerKey:'haru', text:'「なんか方法、あるといいけど。」'},
+    {speakerKey:'minato', text:'「そう都合よくいくかな。」'},
+    {speakerKey:'haru', text:'「そういえば、これ、さっきの予備の札だよね。」'},
+    {speakerKey:'minato', text:'「使ってなかったやつか。」'},
+    {speakerKey:'natsu', text:'「これ、ただの予備じゃなくない？」'},
+    {speakerKey:'narrator', text:'裏返すと、模様のような、文字のような、判読しづらい図柄が並んでいる。'},
+    {speakerKey:'haru', text:'「これ…なんだろ。」'},
+    {speakerKey:'minato', text:'「読めそうで読めないな。」'},
+    {speakerKey:'natsu', text:'「多分、これも占いの一部でしょ。」'}
   ],
 
   // 封筒の謎に正解し、カードの操作へ移った直後。
   afterTurn: [
     {speakerKey:'narrator', text:'謎を解くと、カードの回し方が分かる。'},
-    {speakerKey:'natsu', text:'「これ、回るんだ。」'},
+    {speakerKey:'natsu', text:'「これ、この向きにするってこと？」'},
     {speakerKey:'narrator', text:'実際に回してみると、カード上のビジュアルが変化する。'},
     {speakerKey:'minato', text:'「え、待って。これ、隣に置くやつじゃない？」'},
     {speakerKey:'haru', text:'「あ、ほんとだ。矢印っぽくなった。」'},
@@ -149,10 +158,9 @@ window.MYSTERY_POTLUCK_STORY = {
     {speakerKey:'narrator', text:'文字が浮かぶ。'},
     {speakerKey:'narrator', text:'だ ん け つ'},
     {speakerKey:'minato', text:'「…だんけつ、って出た。」'},
-    {speakerKey:'narrator', text:'少しの間、誰も何も言わなかった。'},
-    {speakerKey:'natsu', text:'「なんか、ちゃんと四人で解いた感じする。」'},
-    {speakerKey:'haru', text:'「うん。」'},
-    {speakerKey:'minato', text:'「まあ、悪くない。」'},
+    {speakerKey:'natsu', text:'「おお。」'},
+    {speakerKey:'haru', text:'「今度は鍋っぽいね。」'},
+    {speakerKey:'natsu', text:'「じゃ、作ろ。」'},
     {speakerKey:'narrator', text:'実際に鍋を作り始める四人。'},
     {speakerKey:'minato', text:'「それ、まだ煮えてない。」'},
     {speakerKey:'natsu', text:'「肉ちゃんと火通して。」'},
@@ -161,8 +169,7 @@ window.MYSTERY_POTLUCK_STORY = {
     {speakerKey:'narrator', text:'湯気の向こうで、四人が笑っている。'},
     {speakerKey:'haru', text:'「なんか今日、久しぶりに高校の頃みたいだったな。」'},
     {speakerKey:'natsu', text:'「また集まろうよ、普通に。」'},
-    {speakerKey:'minato', text:'「普通にって、また変なキット持ってくるつもりだろ。」'},
+    {speakerKey:'minato', text:'「普通にって、また変な占い持ってくるつもりだろ。」'},
     {speakerKey:'natsu', text:'「バレた。」'},
     {speakerKey:'narrator', text:'鍋を囲む四人の声が、静かに続いていく。'}
-  ]
-};
+  ]};
