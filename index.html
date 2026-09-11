@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./style.css?v=7" />
+  <link rel="stylesheet" href="./style.css?v=10" />
 </head>
 <body>
   <div class="onboarding" id="onboarding" aria-live="polite">
@@ -18,39 +18,49 @@
         <h1 class="onboarding-title">ゲームを始める前に</h1>
         <div class="notice-list">
           <p><strong>1.</strong> このゲームは1〜4人で遊べます。複数人の場合は相談しながら進めてください。</p>
-          <p><strong>2.</strong> “鍋”の解答欄は机の中央に置き、途中で回さないでください。必要な方向へ、見る人が移動してください。</p>
-          <p><strong>3.</strong> 正解した解答欄は自動で確定し、再送信できなくなります。必要な答えがそろうと次のステップが開きます。</p>
-          <p><strong>4.</strong> 未解放のステップは表示されません。今見えている情報だけで進めてください。</p>
-          <p><strong>5.</strong> 進行状況は、このタブを開いている間だけ保存されます。リロードしても続きから再開できます。</p>
+          <p><strong>2.</strong> “鍋”の解答盤は机の中央に置き、途中で回さないでください。必要な方向へ、見る人が移動してください。</p>
+          <p><strong>3.</strong> キャラクター選択とA〜Dの問題担当は別です。好きなキャラクターを選んで構いません。</p>
+          <p><strong>4.</strong> 正解した解答欄はその場で確定します。必要な答えがそろうまで、先の内容は表示されません。</p>
+          <p><strong>5.</strong> 進行状況はこのタブを開いている間だけ保存されます。リロードしても続きから再開できます。</p>
         </div>
         <div class="onboarding-actions">
-          <button class="primary-button" id="toNameStep" type="button">つぎへ</button>
+          <button class="primary-button" id="toPlayersStep" type="button">つぎへ</button>
           <button class="text-button" id="resetProgress" type="button">このタブの進行をリセット</button>
         </div>
       </div>
     </section>
 
-    <section class="onboarding-page" data-onboarding-page="name" aria-hidden="true">
-      <div class="onboarding-card name-card">
-        <p class="eyebrow">YOUR NAME</p>
-        <h2 class="onboarding-title">あなたの名前を入力してください</h2>
-        <p class="name-note">仮名6文字以内で入力してください。<br><span>※ハンドルネームも可能です。</span></p>
-        <label class="name-label" for="playerName">なまえ</label>
-        <div class="name-entry">
-          <input id="playerName" type="text" maxlength="6" autocomplete="off" inputmode="text" placeholder="例：ユウ" aria-describedby="nameError">
-          <button class="primary-button" id="startGame" type="button">はじめる</button>
+    <section class="onboarding-page" data-onboarding-page="players" aria-hidden="true">
+      <div class="onboarding-card setup-card">
+        <p class="eyebrow">PLAYERS</p>
+        <h2 class="onboarding-title">何人で遊びますか？</h2>
+        <p class="setup-note">実際にこのゲームを遊ぶ人数を選んでください。</p>
+        <div class="player-count" id="playerCountButtons" aria-label="参加人数"></div>
+        <div class="onboarding-actions">
+          <button class="primary-button" id="toCharactersStep" type="button" disabled>キャラクターを選ぶ</button>
+          <button class="text-button" id="backToNotice" type="button">注意事項にもどる</button>
         </div>
-        <p class="name-error" id="nameError" role="alert"></p>
-        <div class="name-preview" id="namePreview" aria-hidden="true">
-          <div class="mini-avatar" id="namePreviewAvatar"><span class="mini-initial">Y</span></div>
-          <div><span class="name-preview-label">表示イメージ</span><strong id="namePreviewText">ユウ</strong><small id="namePreviewRoman">YUU</small></div>
+      </div>
+    </section>
+
+    <section class="onboarding-page" data-onboarding-page="characters" aria-hidden="true">
+      <div class="onboarding-card character-setup-card">
+        <p class="eyebrow">CHARACTER SELECT</p>
+        <h2 class="onboarding-title">担当キャラクターを選ぼう</h2>
+        <p class="setup-note">一人ずつ好きなキャラクターを選んでください。選ばなかったキャラクターも物語には登場します。台詞を演じる必要はありません。</p>
+        <div class="player-slots" id="playerSlots"></div>
+        <p class="setup-error" id="setupError" role="alert"></p>
+        <div class="onboarding-actions">
+          <button class="primary-button" id="startGame" type="button">ゲームをはじめる</button>
+          <button class="text-button" id="backToPlayers" type="button">人数選択にもどる</button>
         </div>
-        <button class="text-button back-button" id="backToNotice" type="button">注意事項にもどる</button>
       </div>
     </section>
   </div>
 
   <div id="gameShell" hidden>
+    <audio id="bgmAudio" src="./assets/bgm-loop.ogg" loop preload="auto"></audio>
+    <button class="bgm-button" id="bgmToggle" type="button" aria-pressed="false" aria-label="BGMをオン・オフする"><span class="bgm-dot"></span><span id="bgmLabel">BGM ON</span></button>
     <button class="hint-button" type="button" onclick="window.open('./hint.html','_blank')" aria-label="ヒントを開く">
       <span class="hint-icon">?</span><span>HINT</span>
     </button>
@@ -109,11 +119,11 @@
       <section class="chapter chapter-turn stage-hidden" id="stage-turn" aria-hidden="true">
         <div class="chapter-index">04</div>
         <div class="chapter-copy"><p class="chapter-kicker" data-ui="turn.kicker"></p><h2 data-ui="turn.title"></h2><p data-ui="turn.body"></p></div>
-        <div class="envelope-cue" aria-label="同梱の小封筒を使う場面">
-          <div class="envelope-visual" aria-hidden="true"><span>封</span></div>
-          <div class="envelope-copy">
-            <p class="envelope-label">TABLE ITEM</p>
-            <p>テーブルに残っていた小さな封筒。<br>中身から導いた答えを入力してください。</p>
+        <div class="guide-cue" aria-label="占いの手引きにある追加導線">
+          <div class="guide-mark" aria-hidden="true">↗</div>
+          <div class="guide-copy">
+            <p class="guide-label">FORTUNE GUIDE</p>
+            <p>手引きの隅にあった、あの一文。<br><strong>「結果に納得いかなかったら、こちらへ。」</strong></p>
           </div>
         </div>
         <div class="final-entry"><input id="turnStep" autocomplete="off" placeholder="こたえを入力"><button data-check="turnStep">ANSWER</button><p class="feedback" id="fb-turnStep"></p></div>
@@ -147,7 +157,7 @@
       </section>
 
       <section class="credits stage-hidden" id="credits" aria-hidden="true">
-        <video class="credits-bg" autoplay muted loop playsinline poster="./assets/credits-poster-placeholder.jpg"><source src="./assets/credits-placeholder.mp4" type="video/mp4"></video>
+        <div class="credits-bg credits-bg-placeholder" aria-hidden="true"></div>
         <div class="credits-overlay"></div>
         <div class="credits-content"><p class="clear-mark">CLEAR</p><h2>だんけつ</h2><p class="credits-lead" data-ui="credits.lead"></p><div class="roll"><p>MYSTERY POTLUCK - YA MI NA BE -</p><p>Planning / Story / Puzzle Design</p><p>YOUR TEAM</p><p class="roll-gap">SPECIAL THANKS</p><p>PLAYERS WHO GATHER AROUND THE POT</p></div></div>
       </section>
@@ -163,9 +173,10 @@
     </div>
   </div>
 
-  <script src="./answer-data.js?v=7"></script>
-  <script src="./ui-data.js?v=7"></script>
-  <script src="./story-data.js?v=7"></script>
-  <script src="./script.js?v=7"></script>
+  <script src="./answer-data.js?v=10"></script>
+  <script src="./character-data.js?v=10"></script>
+  <script src="./ui-data.js?v=10"></script>
+  <script src="./story-data.js?v=10"></script>
+  <script src="./script.js?v=10"></script>
 </body>
 </html>
