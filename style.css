@@ -1,0 +1,206 @@
+:root {
+  --paper:#fffaf0;
+  --ink:#242332;
+  --red:#c8153c;
+  --red-hover:#a91032;
+  --muted:#69636b;
+  --border:#d8cfc6;
+  --font:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic",Meiryo,sans-serif;
+  --serif:"Yu Mincho","Hiragino Mincho ProN",serif;
+}
+*{box-sizing:border-box}
+html{background:#58436e;scroll-behavior:auto!important}
+body{margin:0;font-family:var(--font);color:var(--ink);line-height:1.85;min-height:100vh}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background-image:url('./assets/background_pc.png');background-size:cover;background-position:center;background-repeat:no-repeat}
+button,input{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid #3867a4;outline-offset:3px}
+.page{width:min(760px,calc(100% - 64px));margin:32px auto 42px;background:rgba(255,250,240,.975);min-height:calc(100vh - 74px);box-shadow:0 7px 40px rgba(16,10,30,.18)}
+.game{padding:0 64px 72px}
+.panel{padding:72px 0 82px;border-bottom:1px solid var(--border)}
+.panel:first-child{padding-top:86px}
+.panel:last-child{border-bottom:0}
+.panel h1{font-size:clamp(23px,3vw,31px);line-height:1.55;margin:0 0 36px;text-align:center;font-weight:800;letter-spacing:.015em}
+.panel h2{font-size:clamp(21px,2.7vw,28px);line-height:1.5;margin:0 0 25px;text-align:center}
+.panel p{margin:0 0 20px}
+.panel p:last-child{margin-bottom:0}
+.panel .small{font-size:13px;color:var(--muted)}
+.notice-intro{margin-bottom:34px!important}
+.notice-heading{font-weight:800;font-size:17px;margin:38px 0 10px}
+.inventory{list-style:none;margin:0;padding:0}
+.inventory li{padding:9px 0 9px 24px;position:relative;border-bottom:1px solid rgba(36,35,50,.09)}
+.inventory li::before{content:'・';position:absolute;left:4px;font-weight:800}
+.notice-text{font-size:15px;line-height:2.05}
+.contact{margin-top:22px;font-size:14px}
+.contact a{color:inherit;overflow-wrap:anywhere}
+.actions{margin-top:38px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.action{border:0;background:var(--red);color:#fff;padding:14px 34px;min-width:190px;font-size:16px;font-weight:800;line-height:1.4;min-height:52px;transition:background .12s}
+.action:hover{background:var(--red-hover)}
+.action:disabled{opacity:.45;cursor:not-allowed}
+.action.secondary{background:#fff;color:var(--red);border:1px solid var(--red)}
+.action.secondary:hover{background:#fff0f2}
+.step-heading{display:block;width:min(235px,65%);height:auto;margin:0 auto 38px;mix-blend-mode:multiply}
+.step-copy{text-align:center;font-size:17px;font-weight:700;line-height:1.9;margin-bottom:26px!important}
+.subcopy{text-align:center;font-size:14px;line-height:1.9;color:var(--muted)}
+.confirm-list{list-style:none;padding:0;margin:24px auto 20px;max-width:440px}
+.confirm-list li{padding:8px 0;border-bottom:1px solid var(--border)}
+.confirm-list li::before{content:'✓';color:var(--red);font-weight:800;margin-right:11px}
+.reveal{padding-top:38px;margin-top:40px;border-top:1px solid var(--border)}
+.reveal h3{font-size:20px;text-align:center;margin:0 0 18px}
+.reveal .subcopy{margin-bottom:25px}
+.instructions{max-width:520px;margin:24px auto 0;font-size:14px}
+.instructions summary{cursor:pointer;text-decoration:underline;text-underline-offset:4px;color:#6a2b43;text-align:center}
+.instructions p{padding:16px 4px 0}
+.story{font-size:16px;line-height:2.2;margin:0 auto 28px;max-width:540px}
+.story strong{font-weight:800}
+.story-dialogue{margin:22px 0;padding:0}
+.dialogue{margin:20px 0 22px;display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.dialogue .speaker{font-size:12px;font-weight:700;color:#6a334b}
+.bubble{background:#fff;border:1px solid #d4c9c0;padding:14px 19px;max-width:92%;font-size:15px;line-height:1.95;position:relative}
+.dialogue.operator{align-items:flex-end}
+.dialogue.operator .bubble{background:#f7e9ed;border-color:#e6b7c4}
+.answer-area{padding:32px 0 0;margin-top:32px;border-top:1px solid var(--border)}
+.answer-area h3{font-size:19px;margin:0 0 7px}
+.answer-area .subcopy{text-align:left;margin:0 0 18px;font-size:13px}
+.answer-form{display:flex;gap:10px;align-items:stretch}
+.answer-form input{min-width:0;flex:1;background:#fff;border:1px solid #c7bdb7;padding:12px 13px;font-size:16px;border-radius:0;color:var(--ink)}
+.answer-form .action{min-width:110px;padding:12px 16px;font-size:15px}
+.feedback{min-height:1.6em;margin:10px 0 0!important;font-size:14px;color:#a81738}
+.feedback.ok{color:#315d47}
+.log{margin:28px 0 0;padding:0;list-style:none}
+.log li{border-top:1px solid var(--border);padding:15px 0 17px}
+.log .found{display:flex;align-items:baseline;gap:14px;font-weight:800;font-size:17px}
+.log .number{font-size:12px;color:#8b5a69;font-family:Georgia,serif;min-width:22px}
+.log .bubble{display:inline-block;margin:9px 0 0 35px;max-width:calc(100% - 35px);font-size:14px;padding:10px 15px}
+.solved-name{font-family:var(--serif);font-size:clamp(27px,6vw,38px);text-align:center;font-weight:800;margin:24px 0}
+.story-break{padding:20px 0 0}
+.search-note{margin:28px 0;border:1px solid var(--border);background:#fff;padding:20px 23px;font-size:14px;line-height:1.9}
+.search-note strong{font-size:23px;color:#69314e}
+.secret-letter{border:1px solid #a88c8d;background:#fffef9;padding:25px 25px;margin:26px 0 34px;font-family:var(--serif);line-height:2.2}
+.secret-letter p{margin-bottom:12px}
+.unlock-message{font-size:13px;color:#6b5c63;text-align:center;margin:15px 0 0!important}
+.footer{padding:25px 24px 38px;text-align:center;border-top:1px solid var(--border);font-size:11px;color:#82767c}
+.footer p{margin:16px 0 0}
+.quiet-button{font-size:12px;background:none;border:0;color:#777;text-decoration:underline;text-underline-offset:3px;padding:10px}
+[hidden]{display:none!important}
+@media(max-width:740px){
+ body::before{background-image:url('./assets/background_sp.png');background-position:center center}
+ .page{width:calc(100% - 26px);margin:13px auto 26px;min-height:calc(100vh - 39px)}
+ .game{padding:0 24px 40px}
+ .panel{padding:54px 0 62px}
+ .panel:first-child{padding-top:60px}
+ .step-heading{width:min(220px,76%);margin-bottom:30px}
+ .notice-text{font-size:14px}
+ .action{width:100%;max-width:370px}
+ .answer-form .action{width:auto;min-width:84px;padding:10px 12px}
+ .answer-form input{width:100%;font-size:16px}
+ .bubble{max-width:100%}
+}
+@media(max-width:380px){.game{padding:0 18px 34px}.panel h1{font-size:22px}.answer-form{gap:6px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* v5: 情報の役割を明確にする。装飾は操作と節目に限定。 */
+html{scrollbar-gutter:stable}
+body.modal-open{overflow:hidden}
+.notice-heading{text-align:left!important}
+.directive{background:var(--red);color:#fff;font-size:17px;line-height:1.8;font-weight:800;text-align:center;padding:17px 20px;margin:0 0 25px!important}
+.confirm-heading{font-size:19px;text-align:center;margin:0 0 22px}
+.instruction{margin:27px 0 0!important;border:2px solid var(--red);padding:17px 21px;color:#3e2d32;font-size:15px;font-weight:700;line-height:2}
+.mission{border:2px solid var(--red);padding:20px 16px;margin:0 0 22px;text-align:center;background:rgba(255,255,255,.52)}
+.mission-text{color:var(--red);font-size:clamp(18px,3vw,23px);font-weight:900;line-height:1.5}
+.pot-area{margin-top:54px}
+.progress-count{font-size:14px;color:var(--muted);margin:0 0 15px!important}
+.log{margin-top:25px}
+.log li{display:flex;align-items:baseline;gap:13px;flex-wrap:wrap;padding:12px 0}
+.log-index{font-size:12px;color:#916b73;font-family:Georgia,serif;min-width:24px}
+.log strong{font-size:17px}
+.comment-replay{border:0;background:none;color:#7d3d52;text-decoration:underline;text-underline-offset:3px;font-size:12px;margin-left:auto;padding:6px 0}
+.comment-replay:hover{color:var(--red)}
+.next-step{padding-top:26px;margin-top:28px}
+.next-step:has(.action:disabled){opacity:.72}
+.result-overlay{position:fixed;inset:0;z-index:1000;background:rgba(19,14,31,.68);display:flex;align-items:center;justify-content:center;padding:20px;overscroll-behavior:contain}
+.result-dialog{position:relative;background:var(--paper);width:min(490px,100%);max-height:min(82vh,750px);overflow-y:auto;padding:44px 36px 38px;box-shadow:0 12px 50px rgba(0,0,0,.27);border:1px solid #d9c7b8;color:var(--ink)}
+.result-close{position:absolute;right:10px;top:8px;width:44px;height:44px;border:0;background:transparent;color:#55434a;font-size:30px;font-weight:400;line-height:1}
+.result-close:hover{color:var(--red)}
+.result-title{text-align:center;color:var(--red);font-size:clamp(32px,6vw,43px);font-weight:900;letter-spacing:.025em;margin:2px 0 30px;line-height:1.4}
+.result-title.interim{font-size:clamp(30px,6vw,40px)}
+.result-speaker{color:#8c3e56;font-size:12px;font-weight:800;margin:0 0 6px 8px}
+.result-bubble{position:relative;background:#fff;border:1px solid #d5c5bc;padding:18px 21px;font-size:16px;line-height:2;white-space:pre-line}
+.result-bubble::before{content:"";position:absolute;left:24px;top:-9px;width:15px;height:15px;background:#fff;border-left:1px solid #d5c5bc;border-top:1px solid #d5c5bc;transform:rotate(45deg)}
+.result-mission{margin-top:32px;padding:23px 13px 6px;text-align:center;border-top:1px solid #d8cfc6}
+.result-mission-label{display:block;color:var(--red);font-size:13px;font-weight:800;letter-spacing:.06em;margin-bottom:10px}
+.result-mission strong{display:block;font-size:20px;line-height:1.7;color:#2b2830}
+.ending-image{max-width:660px;margin:0 auto}
+.ending-image img{display:block;width:100%;height:auto}
+.dialogue .bubble{white-space:pre-line}
+@media(max-width:740px){
+ .directive{font-size:15px;padding:14px 13px}
+ .instruction{font-size:14px;padding:14px 15px}
+ .result-dialog{padding:42px 23px 30px;max-height:86vh}
+ .result-bubble{padding:16px 16px;font-size:15px}
+ .result-mission strong{font-size:18px}
+ .log li{gap:8px}
+ .comment-replay{font-size:12px}
+}
+
+/* v6: 指示・確認欄・操作ボタンを見分けられるようにする */
+.action{
+  position:relative;
+  background:#b70e32;
+  border:2px solid #8f0929;
+  box-shadow:0 4px 0 #780b27;
+  padding:13px 44px 13px 27px;
+  min-height:55px;
+  border-radius:2px;
+  transition:background-color .12s, box-shadow .12s, transform .12s;
+}
+.action:not(:disabled)::after{
+  content:'›';
+  position:absolute;
+  right:17px;
+  top:50%;
+  transform:translateY(-53%);
+  font-size:25px;
+  font-weight:400;
+  line-height:1;
+}
+.action:not(:disabled):hover{background:#940b2a;box-shadow:0 4px 0 #58071b}
+.action:not(:disabled):active{transform:translateY(3px);box-shadow:0 1px 0 #780b27}
+.action:disabled{
+  opacity:1;
+  background:#e9e2dd;
+  color:#756a6d;
+  border:1px solid #d8cfcb;
+  box-shadow:none;
+  padding:13px 27px;
+  cursor:default;
+}
+.action:disabled::after{content:none}
+/* 赤塗りの指示欄はボタンではない。カーソルや立体感を与えない */
+.directive{border:0;box-shadow:none;cursor:default}
+.confirm-phase{padding-top:28px}
+.confirm-card{
+  border:2px solid var(--red);
+  background:rgba(255,255,255,.28);
+  padding:25px 28px 23px;
+}
+.confirm-card .confirm-heading{
+  text-align:left;
+  margin:0 0 18px;
+  font-size:19px;
+}
+.confirm-card p{
+  margin:0 0 10px;
+  text-align:left;
+  font-size:15px;
+  line-height:1.9;
+  color:var(--ink);
+}
+.confirm-card p:last-child{margin-bottom:0}
+.confirm-card .confirm-caution{font-size:14px;color:#67474e}
+.confirm-phase > .actions{margin-top:25px}
+@media(max-width:740px){
+ .confirm-card{padding:20px 18px}
+ .confirm-card p{font-size:14px}
+ .confirm-card .confirm-heading{font-size:17px}
+ .action:not(:disabled){padding-right:44px}
+}

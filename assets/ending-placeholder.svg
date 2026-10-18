@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1050" role="img" aria-label="エンディング画像の差し替え予定領域">
+  <rect width="800" height="1050" fill="#fffaf0"/>
+  <rect x="28" y="28" width="744" height="994" fill="none" stroke="#d7c6b4" stroke-width="2"/>
+  <path d="M145 380 H655 M145 660 H655" stroke="#cc1639" stroke-width="3"/>
+  <g fill="#cc1639" font-family="serif" text-anchor="middle">
+    <text x="400" y="505" font-size="37" font-weight="bold">ENDING IMAGE</text>
+    <text x="400" y="564" font-size="24">エンディング画像をここに配置</text>
+  </g>
+</svg>

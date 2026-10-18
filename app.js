@@ -1,0 +1,332 @@
+(() => {
+  'use strict';
+  const DATA = window.POTLUCK_DATA;
+  const KEY = 'mystery-potluck-web-v4'; // 前版の進行状況を引き継ぐ
+  const STAGES = ['notice', 'prep', 'm1', 'm2', 'm3', 'call', 'search', 'last', 'ending'];
+  const root = document.getElementById('game');
+  const overlay = document.getElementById('result-overlay');
+  const modalBody = document.getElementById('result-body');
+  const closeModalButton = document.getElementById('close-result');
+  let previousFocus = null;
+  let composing = false;
+
+  const blank = () => ({
+    unlocked: ['notice'], prepDone: false,
+    months: {1:{phase:'sealed',solved:[],potSolved:false},2:{phase:'sealed',solved:[],potSolved:false},3:{phase:'sealed',solved:[],potSolved:false}},
+    last: {phase:'sealed',firstSolved:false,finalSolved:false}
+  });
+  function load() {
+    try {
+      const value = JSON.parse(localStorage.getItem(KEY));
+      if (!value || !Array.isArray(value.unlocked) || !value.months || !value.last) return blank();
+      const base = blank();
+      base.unlocked = STAGES.filter(x => value.unlocked.includes(x));
+      base.prepDone = !!value.prepDone;
+      for (const m of DATA.months) {
+        const old = value.months[m.id] || {};
+        base.months[m.id] = {
+          phase:['sealed','opened','confirmed'].includes(old.phase)?old.phase:'sealed',
+          solved:Array.isArray(old.solved)?[...new Set(old.solved.filter(i=>Number.isInteger(i)&&i>=0&&i<m.foods.length))]:[],
+          potSolved:!!old.potSolved
+        };
+      }
+      base.last = {phase:['sealed','opened','confirmed'].includes(value.last.phase)?value.last.phase:'sealed',firstSolved:!!value.last.firstSolved,finalSolved:!!value.last.finalSolved};
+      return base;
+    } catch { return blank(); }
+  }
+  let state = load();
+  // 旧版では鍋の完成後にもう一度「1ヶ月目へ進む」を押す仕様だった。
+  // 既存のセーブデータでも、鍋を準備済みなら1ヶ月目を表示する。
+  if (state.prepDone && !state.unlocked.includes('m1') && state.unlocked.includes('prep')) {
+    state.unlocked.push('m1');
+    state.unlocked = STAGES.filter(x => state.unlocked.includes(x));
+  }
+  const save = () => {try {localStorage.setItem(KEY,JSON.stringify(state));} catch { /* ストレージ無効でもプレイ可能 */ }};
+  const esc = value => String(value??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const norm = value => String(value||'').normalize('NFKC').trim().toLowerCase()
+    .replace(/[\s\u3000・･、,。．.\-―－]/g,'')
+    .replace(/[ァ-ヶ]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60))
+    .replace(/鍋/g,'なべ');
+  const matches = (value,variants) => variants.some(v=>norm(value)===norm(v));
+  const img = file => `<img class="step-heading" src="./assets/${file}" alt="${file==='laststep.png'?'LAST STEP 4ヶ月目':file==='step0.png'?'STEP.0':file.replace('.png','').toUpperCase()}" width="447" height="320">`;
+  const action = (label,key,kind='') => `<div class="actions"><button type="button" class="action ${kind}" data-action="${key}">${esc(label)}</button></div>`;
+  const done = label => `<div class="actions"><button type="button" class="action" disabled>${esc(label)}</button></div>`;
+  const panel = (id,content) => `<section class="panel" id="section-${id}">${content}</section>`;
+  const exists = stage => state.unlocked.includes(stage);
+  const month = n => DATA.months[n-1];
+  const monthState = n => state.months[n];
+  const story = text => `<p class="story">${esc(text)}</p>`;
+  const directive = text => `<p class="directive">${esc(text)}</p>`;
+  const mission = text => `<div class="mission"><span class="mission-text">${esc(text)}</span></div>`;
+  const bubble = text => `<div class="dialogue"><span class="speaker">あなた</span><div class="bubble">${esc(text)}</div></div>`;
+
+  function showModal({comment,missionText='',heading='正解！',kind='success',missionLabel='新たなミッション'}) {
+    previousFocus = document.activeElement;
+    modalBody.innerHTML = `<h2 class="result-title ${kind==='interim'?'interim':''}">${esc(heading)}</h2>
+      ${comment?`<div class="result-speaker">あなた</div><div class="result-bubble">${esc(comment)}</div>`:''}
+      ${missionText?`<div class="result-mission"><span class="result-mission-label">${esc(missionLabel)}</span><strong>${esc(missionText)}</strong></div>`:''}`;
+    overlay.hidden = false;
+    document.body.classList.add('modal-open');
+    closeModalButton.focus({preventScroll:true});
+  }
+  function closeModal() {
+    if (overlay.hidden) return;
+    overlay.hidden = true;
+    document.body.classList.remove('modal-open');
+    modalBody.innerHTML = '';
+    if (previousFocus?.isConnected && !previousFocus.disabled) previousFocus.focus({preventScroll:true});
+    previousFocus = null;
+  }
+  closeModalButton.addEventListener('click',closeModal);
+  overlay.addEventListener('click',event=>{if(event.target===overlay)closeModal();});
+  document.addEventListener('keydown',event=>{
+    if(overlay.hidden)return;
+    if(event.key==='Escape'){event.preventDefault();closeModal();}
+    if(event.key==='Tab') {event.preventDefault();closeModalButton.focus({preventScroll:true});}
+  });
+
+  function unlock(stage) {
+    if (!STAGES.includes(stage) || exists(stage)) return;
+    const previous = STAGES[STAGES.indexOf(stage)-1];
+    if (!exists(previous)) return;
+    state.unlocked.push(stage);save();
+    root.insertAdjacentHTML('beforeend',buildStage(stage));
+    // スクロール移動はしない。押したボタンは同じ文言で無効化。
+    const btn = root.querySelector(`[data-action="unlock:${stage}"]`);
+    if (btn) {btn.disabled=true;}
+  }
+  function next(stage,label) {
+    return `<div class="reveal next-step">${exists(stage)?done(label):action(label,`unlock:${stage}`)}</div>`;
+  }
+  function renderNotice() {
+    return panel('notice',`<h1>「ミステリーポットラック」を<br>始める前に</h1>
+      <p class="notice-intro">ゲームを始める前に、以下の内容物が揃っているか確認してください。</p>
+      <ul class="inventory">${DATA.inventory.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+      <h2 class="notice-heading">注意事項</h2>
+      <div class="notice-text"><p>・指示があるまで、封筒を開けたり中身を取り出したりしないでください。</p>
+      <p>・ゲームは、このWebサイトの案内に沿って進行します。謎の答えがわかったら解答欄に入力してください。</p>
+      <p>・進行状況は、このブラウザに保存されます。ブラウザのデータを削除すると、続きから再開できなくなる場合があります。</p>
+      <p>・十分にコンテンツを楽しんでいただくため、ソースコードの閲覧はお控えください。</p>
+      <p>・内容物の不足や不備がある場合は、下記窓口までご連絡ください。</p></div>
+      <div class="contact">株式会社エフェックス<br><a href="mailto:${esc(DATA.contact)}">${esc(DATA.contact)}</a></div>
+      ${exists('prep')?done('確認しました・ゲームを始める'):action('確認しました・ゲームを始める','unlock:prep')}`);
+  }
+  function renderPrep() {
+    return panel('prep',`${img('step0.png')}
+      ${directive('まずは鍋を準備しましょう。')}
+      <p class="subcopy">「STEP.0」の用紙と折り紙シートを取り出し、<br>書かれた指示に沿って鍋を作ってください。</p>
+      <p class="subcopy">完成したら、鍋シートの指定された場所に置いてください。<br>この鍋は、ゲームの途中でも使用します。</p>
+      ${state.prepDone?done('鍋を準備しました'):action('鍋を準備しました','prep-done')}`);
+  }
+  function renderMonth(n) {
+    const m=month(n),s=monthState(n);
+    return panel(`m${n}`,`${img(m.image)}${directive(`「${m.label}」の封筒を開けてください。`)}
+      ${s.phase==='sealed'?action('開けました',`opened:${n}`):done('開けました')}
+      ${s.phase!=='sealed'?renderConfirm(n):''}`);
+  }
+  function renderConfirm(n) {
+    const m=month(n),s=monthState(n);
+    return `<div class="reveal confirm-phase" data-phase="confirm-${n}">
+      <div class="confirm-card">
+        <h3 class="confirm-heading">内容物を確認してください。</h3>
+        <p>折りたたまれた謎が <strong>${m.count}枚</strong> 入っているか確認してください。</p>
+        <p class="confirm-caution">※謎は開かずに確認してください。</p>
+        <p>確認した謎は、折りたたまれた状態で鍋の中に入れてください。</p>
+      </div>
+      ${s.phase==='opened'?action('内容物を確認しました',`confirmed:${n}`):done('内容物を確認しました')}
+      ${s.phase==='confirmed'?renderPlay(n):''}</div>`;
+  }
+  function renderFoodLog(n,index,position) {
+    const food=month(n).foods[index];
+    return `<li><span class="log-index">${String(position+1).padStart(2,'0')}</span>
+      <strong>${esc(food.name)}</strong>
+      <button type="button" class="comment-replay" data-action="replay:${n}:${index}">感想を見る</button></li>`;
+  }
+  function renderPlay(n) {
+    const m=month(n),s=monthState(n);
+    return `<div class="reveal play" data-phase="play-${n}">
+      ${story(m.intro)}
+      <p class="instruction">謎は好きな順番で解いて構いません。<br>わかった食材名を、下の解答欄に入力してください。</p>
+      <div class="answer-area"><h3>食材の答え</h3>
+      <p class="progress-count" data-progress="${n}">${s.solved.length} / ${m.count} 種類が判明しました。</p>
+      <form class="answer-form" data-form="food:${n}" autocomplete="off">
+      <input name="answer" aria-label="${n}ヶ月目の食材名" placeholder="食材名を入力" ${s.solved.length===m.count?'disabled':''} required>
+      <button class="action" type="submit" ${s.solved.length===m.count?'disabled':''}>判定</button></form>
+      <p class="feedback" role="status" aria-live="polite"></p>
+      <ol class="log" data-log="${n}">${s.solved.map((index,i)=>renderFoodLog(n,index,i)).join('')}</ol></div>
+      ${s.solved.length===m.count?renderPot(n):''}</div>`;
+  }
+  function renderPot(n) {
+    const m=month(n),s=monthState(n);
+    return `<div class="answer-area pot-area" data-pot="${n}">
+      ${mission('今月の鍋の名前を突き止めよ！')}
+      <p class="subcopy">鍋シートも確認して、鍋の名前を導いてください。</p>
+      ${s.potSolved?`<div class="solved-name">${esc(m.pot)}</div>
+        ${next(n===3?'call':`m${n+1}`,n===3?'続きを読む':`${n+1}ヶ月目へ進む`)}`:
+        `<form class="answer-form" data-form="pot:${n}" autocomplete="off">
+          <input name="answer" aria-label="${n}ヶ月目の鍋の名前" placeholder="鍋の名前を入力" required>
+          <button class="action" type="submit">判定</button></form>
+          <p class="feedback" role="status" aria-live="polite"></p>`}
+    </div>`;
+  }
+  function renderCall() {
+    return panel('call',`<h2>ちょっと待って……。</h2>
+      ${story('3ヶ月目の食材を見て、とうとうサービスに問い合わせることにした。')}
+      <div class="story-dialogue">${bubble('ショートケーキってなんですか？\nこれまでも変な食材が入っていましたし、まあ美味しかったんですけど……。')}
+        <div class="dialogue operator"><span class="speaker">コールセンター</span><div class="bubble">いえいえ、お客様。<br>そちらは食後にお召し上がりください。</div></div>
+        ${bubble('……そうだったんですね。わかりました。')}</div>
+      ${story('電話を切ったあと、ふと考える。')}
+      ${bubble('にしても、急にショートケーキを送ってくるなんて……。\nミステリーポットラックって、そもそも何なんだ？')}
+      ${next('search','調べてみる')}`);
+  }
+  function renderSearch() {
+    return panel('search',`<h2>ミステリーポットラックって……？</h2>
+      ${story('気になって調べてみると、ある言葉が目に入った。')}
+      <div class="search-note">「YAMINABE」は、日本語の「闇鍋」を表したものとしても読める。<br><br><strong>YAMINABE ＝ 闇鍋……？</strong></div>
+      ${bubble('えっ……ヤミナベ！？\nこのサービスって、闇鍋のサービスだったってこと？\nもしかして、変なものを食べさせて楽しんでる……？')}
+      ${story('なんだか釈然としないまま、次の月を迎えた。')}
+      ${next('last','4ヶ月目へ進む')}`);
+  }
+  function renderLast() {
+    const s=state.last;
+    return panel('last',`${img('laststep.png')}
+      ${directive('4ヶ月目の封入物を開けてください。')}
+      ${s.phase==='sealed'?action('開けました','last-opened'):done('開けました')}
+      ${s.phase!=='sealed'?renderLastConfirm():''}`);
+  }
+  function renderLastConfirm() {
+    const s=state.last;
+    return `<div class="reveal confirm-phase" data-phase="last-confirm">
+      <div class="confirm-card">
+        <h3 class="confirm-heading">内容物を確認してください。</h3>
+        <p>4ヶ月目に届いたものと、一枚の紙を確認してください。</p>
+      </div>
+      ${s.phase==='opened'?action('内容物を確認しました','last-confirmed'):done('内容物を確認しました')}
+      ${s.phase==='confirmed'?renderLastPlay():''}</div>`;
+  }
+  function renderLastPlay() {
+    const s=state.last;
+    return `<div class="reveal" data-phase="last-play">
+      ${mission('今月の鍋の名前を突き止めよ！')}
+      <div class="answer-area"><form class="answer-form" data-form="last" autocomplete="off">
+      <input name="answer" aria-label="今月の鍋の名前" placeholder="鍋の名前を入力" ${s.finalSolved?'disabled':''} required>
+      <button class="action" type="submit" ${s.finalSolved?'disabled':''}>判定</button></form>
+      <p class="feedback" role="status" aria-live="polite"></p>
+      ${s.finalSolved?`<div class="solved-name">やみつき鍋</div>${next('ending','エンディングを見る')}`:''}</div></div>`;
+  }
+  function renderEnding() {
+    return panel('ending',`<div class="ending-image"><img src="./assets/ending-placeholder.svg" alt="エンディング画像（差し替え予定）"></div>`);
+  }
+  function buildStage(stage) {
+    if(stage==='notice')return renderNotice();
+    if(stage==='prep')return renderPrep();
+    if(/^m[123]$/.test(stage))return renderMonth(Number(stage[1]));
+    if(stage==='call')return renderCall();
+    if(stage==='search')return renderSearch();
+    if(stage==='last')return renderLast();
+    if(stage==='ending')return renderEnding();
+    return '';
+  }
+  function renderAll(){root.innerHTML=state.unlocked.map(buildStage).join('');}
+  function feedback(form,text){const p=form.parentElement.querySelector('.feedback');if(p){p.textContent=text;}}
+  function checkFood(n,form) {
+    const m=month(n),s=monthState(n);
+    const index=m.foods.findIndex(f=>matches(form.elements.answer.value,[f.name,...f.aliases]));
+    if(index<0){feedback(form,'その答えは違うようです。');return;}
+    if(s.solved.includes(index)){feedback(form,'その食材はすでに判明しています。');return;}
+    s.solved.push(index);save();
+    const play=form.closest(`[data-phase="play-${n}"]`);
+    play.querySelector('[data-log]').insertAdjacentHTML('beforeend',renderFoodLog(n,index,s.solved.length-1));
+    play.querySelector('[data-progress]').textContent=`${s.solved.length} / ${m.count} 種類が判明しました。`;
+    form.elements.answer.value='';feedback(form,'');
+    const finished=s.solved.length===m.count;
+    if(finished) {
+      form.elements.answer.disabled=true;
+      form.querySelector('button').disabled=true;
+      play.insertAdjacentHTML('beforeend',renderPot(n));
+    }
+    showModal({comment:m.foods[index].reaction,missionText:finished?'今月の鍋の名前を突き止めよ！':''});
+  }
+  function checkPot(n,form) {
+    const m=month(n),s=monthState(n);
+    if(!matches(form.elements.answer.value,[m.pot,...m.potAliases])){feedback(form,'鍋の名前が違うようです。');return;}
+    s.potSolved=true;save();
+    form.closest('[data-pot]').outerHTML=renderPot(n);
+    showModal({comment:m.potReaction});
+  }
+  function checkLast(form) {
+    const value=form.elements.answer.value;
+    if(matches(value,DATA.last.final)) {
+      if(state.last.finalSolved)return;
+      state.last.finalSolved=true;save();
+      form.closest('[data-phase="last-play"]').outerHTML=renderLastPlay();
+      showModal({comment:'……まさか、こんな鍋だったなんて。',missionText:'エンディングを見る',missionLabel:'この先へ'});
+      return;
+    }
+    if(matches(value,DATA.last.initial)) {
+      if(state.last.firstSolved){feedback(form,'その答えはすでに判明しています。');return;}
+      state.last.firstSolved=true;save();
+      form.elements.answer.value='';feedback(form,'');
+      showModal({comment:'……やみなべ。やっぱり、そういうことだったのか？\nでも、これで「極上の鍋」になるのか……？',kind:'interim'});
+      return;
+    }
+    feedback(form,'その答えは違うようです。');
+  }
+  root.addEventListener('click',e=>{
+    const btn=e.target.closest('button[data-action]');if(!btn)return;
+    const key=btn.dataset.action;
+    if(key.startsWith('unlock:')){unlock(key.slice(7));return;}
+    if(key.startsWith('replay:')){
+      const [,n,index]=key.split(':').map(Number);
+      const food=month(n)?.foods[index];
+      if(food && monthState(n).solved.includes(index))showModal({comment:food.reaction});
+      return;
+    }
+    if(key==='prep-done'){
+      if(state.prepDone)return;
+      state.prepDone=true;save();btn.disabled=true;
+      // 鍋の完成を確認したら、その操作で1ヶ月目を解禁する。二度押しをなくす。
+      unlock('m1');return;
+    }
+    const opened=key.match(/^opened:(\d)$/);
+    if(opened){
+      const n=Number(opened[1]),s=monthState(n);
+      if(s.phase!=='sealed')return;
+      s.phase='opened';save();btn.disabled=true;
+      btn.closest('.panel').insertAdjacentHTML('beforeend',renderConfirm(n));return;
+    }
+    const confirmed=key.match(/^confirmed:(\d)$/);
+    if(confirmed){
+      const n=Number(confirmed[1]),s=monthState(n);
+      if(s.phase!=='opened')return;
+      s.phase='confirmed';save();btn.disabled=true;
+      btn.closest(`[data-phase="confirm-${n}"]`).insertAdjacentHTML('beforeend',renderPlay(n));return;
+    }
+    if(key==='last-opened'){
+      if(state.last.phase!=='sealed')return;
+      state.last.phase='opened';save();btn.disabled=true;
+      btn.closest('.panel').insertAdjacentHTML('beforeend',renderLastConfirm());return;
+    }
+    if(key==='last-confirmed'){
+      if(state.last.phase!=='opened')return;
+      state.last.phase='confirmed';save();btn.disabled=true;
+      btn.closest('[data-phase="last-confirm"]').insertAdjacentHTML('beforeend',renderLastPlay());
+    }
+  });
+  root.addEventListener('compositionstart',()=>composing=true);
+  root.addEventListener('compositionend',()=>composing=false);
+  root.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.isComposing||e.keyCode===229||composing))e.preventDefault();});
+  root.addEventListener('submit',e=>{
+    const form=e.target.closest('form[data-form]');if(!form)return;
+    e.preventDefault();if(composing)return;
+    const [type,id]=form.dataset.form.split(':');
+    if(type==='food')checkFood(Number(id),form);
+    if(type==='pot')checkPot(Number(id),form);
+    if(type==='last')checkLast(form);
+  });
+  document.getElementById('reset').addEventListener('click',()=>{
+    if(!confirm('進行状況を消去して、最初からやり直しますか？'))return;
+    closeModal();localStorage.removeItem(KEY);state=blank();renderAll();window.scrollTo(0,0);
+  });
+  renderAll();
+})();
