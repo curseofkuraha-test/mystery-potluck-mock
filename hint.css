@@ -1,0 +1,22 @@
+.hint-page{min-height:calc(100vh - 74px)}
+.hint-content-wrap{padding:78px 64px 90px}
+.hint-content-wrap h1{text-align:center;font-size:32px;margin:0 0 32px;letter-spacing:.04em}
+.hint-intro{text-align:center;font-size:14px;line-height:2;margin:0 0 42px}
+.hint-back{color:#9e1337}
+.accordion-list{list-style:none;margin:0;padding:0}
+.accordion-list .accordion-list{padding:0 0 10px 17px;margin-left:12px;border-left:1px solid #ddd0c7}
+.accordion-list li{margin:0 0 10px}
+.accordion-list details>summary{cursor:pointer;list-style:none;display:block;padding:14px 45px 14px 17px;background:rgba(255,255,255,.55);border:1px solid #d7c9bf;font-weight:700;position:relative;line-height:1.6}
+.accordion-list details>summary::-webkit-details-marker{display:none}
+.accordion-list details>summary::after{content:'＋';position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:18px;color:#b00f38}
+.accordion-list details[open]>summary::after{content:'−'}
+.accordion-list details>summary:hover{border-color:#bc8393}
+.accordion-list details>summary:focus-visible{outline:3px solid #3867a4;outline-offset:2px}
+.accordion-list details> .accordion-list{padding-top:15px}
+.accordion-list>.hint-branch>details>summary{background:#f5e8e4;border-left:4px solid #b81942;font-size:18px}
+.hint-content{background:#fffdf8;padding:18px 20px;line-height:2;border:1px solid #e0d6ce;border-top:0;font-size:15px;overflow-wrap:anywhere}
+.hint-content img{max-width:100%;height:auto;display:block;margin:14px auto}
+.hint-image-missing{font-size:12px;color:#775f65;border:1px dashed #c9bcb5;padding:8px 12px;margin:12px 0;display:block}
+.hint-error{color:#a61a3d}
+@media(max-width:1020px){.hint-page{margin-top:85px}}
+@media(max-width:740px){.hint-content-wrap{padding:58px 23px 70px}.hint-content-wrap h1{font-size:27px}.hint-intro{font-size:13px}.accordion-list .accordion-list{margin-left:5px;padding-left:9px}.accordion-list details>summary{padding:12px 34px 12px 12px}.hint-content{padding:15px 13px;font-size:14px}.hint-page{margin-top:75px}}

@@ -6,10 +6,13 @@
 window.POTLUCK_DATA = {
   contact: 'hanbai_nazo@efex.co.jp',
   inventory: [
-    '進め方が書かれた用紙（STEP.0）',
-    '折り紙シート・鍋シート',
-    '「1ヶ月目」「2ヶ月目」「3ヶ月目」の封筒',
-    '「4ヶ月目」の封入物'
+    'STEP0と書かれた用紙',
+    '赤い半分に折られた紙 2枚（予備含む）',
+    '鍋敷きシート',
+    'STEP1封筒',
+    'STEP2封筒',
+    'STEP3封筒',
+    'LASTSTEP封筒'
   ],
   months: [
     {

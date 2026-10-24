@@ -9,6 +9,7 @@
   const closeModalButton = document.getElementById('close-result');
   let previousFocus = null;
   let composing = false;
+  let interimHelpPending = false;
 
   const blank = () => ({
     unlocked: ['notice'], prepDone: false,
@@ -70,19 +71,28 @@
     closeModalButton.focus({preventScroll:true});
   }
   function closeModal() {
-    if (overlay.hidden) return;
+    if (overlay.hidden || interimHelpPending) return;
     overlay.hidden = true;
     document.body.classList.remove('modal-open');
     modalBody.innerHTML = '';
     if (previousFocus?.isConnected && !previousFocus.disabled) previousFocus.focus({preventScroll:true});
     previousFocus = null;
   }
+  function showInterimHelp() {
+    interimHelpPending = false;
+    modalBody.innerHTML = `<div class="system-help" role="note"><span class="system-help-label">ゲーム進行のヒント</span><p>本当に出汁を２度取りましたか？</p></div>`;
+    closeModalButton.hidden = false;
+    closeModalButton.focus({preventScroll:true});
+  }
+  modalBody.addEventListener('click',event=>{
+    if (event.target.closest('[data-modal-next]')) showInterimHelp();
+  });
   closeModalButton.addEventListener('click',closeModal);
   overlay.addEventListener('click',event=>{if(event.target===overlay)closeModal();});
   document.addEventListener('keydown',event=>{
     if(overlay.hidden)return;
-    if(event.key==='Escape'){event.preventDefault();closeModal();}
-    if(event.key==='Tab') {event.preventDefault();closeModalButton.focus({preventScroll:true});}
+    if(event.key==='Escape'){event.preventDefault();if(!interimHelpPending)closeModal();}
+    if(event.key==='Tab') {event.preventDefault();(interimHelpPending?modalBody.querySelector('[data-modal-next]'):closeModalButton).focus({preventScroll:true});}
   });
 
   function unlock(stage) {
@@ -101,6 +111,7 @@
   function renderNotice() {
     return panel('notice',`<h1>「ミステリーポットラック」を<br>始める前に</h1>
       <p class="notice-intro">ゲームを始める前に、以下の内容物が揃っているか確認してください。</p>
+      <h2 class="inventory-heading">内容物</h2>
       <ul class="inventory">${DATA.inventory.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
       <h2 class="notice-heading">注意事項</h2>
       <div class="notice-text"><p>・指示があるまで、封筒を開けたり中身を取り出したりしないでください。</p>
@@ -115,7 +126,8 @@
     return panel('prep',`${img('step0.png')}
       ${directive('まずは鍋を準備しましょう。')}
       <p class="subcopy">「STEP.0」の用紙と折り紙シートを取り出し、<br>書かれた指示に沿って鍋を作ってください。</p>
-      <p class="subcopy">完成したら、鍋シートの指定された場所に置いてください。<br>この鍋は、ゲームの途中でも使用します。</p>
+      <p class="subcopy">完成したら、鍋敷きシートの上に置けば準備完了です。<br>この鍋は、ゲームの途中でも使用します。</p>
+      <p class="prep-warning"><strong>※ゲーム中に破れてしまったり、作る過程で破れた際は、同封されている予備をお使いください。</strong></p>
       ${state.prepDone?done('鍋を準備しました'):action('鍋を準備しました','prep-done')}`);
   }
   function renderMonth(n) {
@@ -129,9 +141,8 @@
     return `<div class="reveal confirm-phase" data-phase="confirm-${n}">
       <div class="confirm-card">
         <h3 class="confirm-heading">内容物を確認してください。</h3>
-        <p>折りたたまれた謎が <strong>${m.count}枚</strong> 入っているか確認してください。</p>
-        <p class="confirm-caution">※謎は開かずに確認してください。</p>
-        <p>確認した謎は、折りたたまれた状態で鍋の中に入れてください。</p>
+        <p><strong>まずは、封筒の中から一番大きい紙を取り出し、机の上に置いてください。</strong></p>
+        <p><strong>その後、封筒を鍋の上でひっくり返し、中身を入れてください。</strong></p>
       </div>
       ${s.phase==='opened'?action('内容物を確認しました',`confirmed:${n}`):done('内容物を確認しました')}
       ${s.phase==='confirmed'?renderPlay(n):''}</div>`;
@@ -146,7 +157,9 @@
     const m=month(n),s=monthState(n);
     return `<div class="reveal play" data-phase="play-${n}">
       ${story(m.intro)}
-      <p class="instruction">謎は好きな順番で解いて構いません。<br>わかった食材名を、下の解答欄に入力してください。</p>
+      <div class="instruction"><p>鍋の中から好きなものを取り出して、好きな順に解き明かしましょう。</p>
+      <p class="instruction-warning">※一度取り出したものは、鍋の中に戻してはいけません。</p>
+      <p>わかった食材名を、下の解答欄に入力してください。</p></div>
       <div class="answer-area"><h3>食材の答え</h3>
       <p class="progress-count" data-progress="${n}">${s.solved.length} / ${m.count} 種類が判明しました。</p>
       <form class="answer-form" data-form="food:${n}" autocomplete="off">
@@ -160,7 +173,7 @@
     const m=month(n),s=monthState(n);
     return `<div class="answer-area pot-area" data-pot="${n}">
       ${mission('今月の鍋の名前を突き止めよ！')}
-      <p class="subcopy">鍋シートも確認して、鍋の名前を導いてください。</p>
+      <p class="subcopy">導いた食材すべてを使って、鍋の名前を導いてください。</p>
       ${s.potSolved?`<div class="solved-name">${esc(m.pot)}</div>
         ${next(n===3?'call':`m${n+1}`,n===3?'続きを読む':`${n+1}ヶ月目へ進む`)}`:
         `<form class="answer-form" data-form="pot:${n}" autocomplete="off">
@@ -190,7 +203,7 @@
   function renderLast() {
     const s=state.last;
     return panel('last',`${img('laststep.png')}
-      ${directive('4ヶ月目の封入物を開けてください。')}
+      ${directive('4ヶ月目の封筒を開けてください。')}
       ${s.phase==='sealed'?action('開けました','last-opened'):done('開けました')}
       ${s.phase!=='sealed'?renderLastConfirm():''}`);
   }
@@ -268,6 +281,10 @@
       state.last.firstSolved=true;save();
       form.elements.answer.value='';feedback(form,'');
       showModal({comment:'……やみなべ。やっぱり、そういうことだったのか？\nでも、これで「極上の鍋」になるのか……？',kind:'interim'});
+      interimHelpPending = true;
+      closeModalButton.hidden = true;
+      modalBody.insertAdjacentHTML('beforeend','<div class="interim-next"><button class="action" type="button" data-modal-next>次へ進む</button></div>');
+      modalBody.querySelector('[data-modal-next]').focus({preventScroll:true});
       return;
     }
     feedback(form,'その答えは違うようです。');

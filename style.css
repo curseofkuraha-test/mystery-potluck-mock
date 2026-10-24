@@ -204,3 +204,25 @@ body.modal-open{overflow:hidden}
  .confirm-card .confirm-heading{font-size:17px}
  .action:not(:disabled){padding-right:44px}
 }
+
+/* v7: 開始案内の呼吸、進行注意、ヒントへの導線 */
+#section-notice h1{margin-bottom:58px;line-height:1.75}
+#section-notice .notice-intro{margin-bottom:28px!important}
+.inventory-heading{font-size:17px!important;text-align:left!important;margin:24px 0 10px!important}
+#section-notice .notice-heading{margin-top:49px!important;margin-bottom:23px!important}
+.notice-text p{margin-bottom:24px!important;line-height:2.1}
+.notice-text p:last-child{margin-bottom:0!important}
+.prep-warning{max-width:520px;margin:28px auto 0!important;font-size:14px;line-height:1.95;color:#9d1737}
+.instruction p{margin:0 0 10px!important}
+.instruction p:last-child{margin-bottom:0!important}
+.instruction-warning{color:#a6193c;font-weight:800}
+.interim-next{display:flex;justify-content:center;margin-top:28px}
+.interim-next .action{min-width:205px}
+.system-help{padding:15px 0 4px;text-align:center}
+.system-help-label{font-size:12px;font-weight:800;color:#705b68;letter-spacing:.03em}
+.system-help p{font-size:clamp(18px,4vw,22px);font-weight:800;margin:22px 0 12px;line-height:1.7}
+.hint-shortcut{position:fixed;z-index:80;top:24px;right:20px;background:#fff9ef;color:#9e1337;border:2px solid #ad1c3d;padding:9px 17px;text-decoration:none;font-weight:800;font-size:14px;line-height:1.5;box-shadow:0 3px 0 #77172e}
+.hint-shortcut:hover{background:#fbe8e7}
+.hint-shortcut:focus-visible{outline:3px solid #3867a4;outline-offset:3px}
+@media(max-width:1020px){.hint-shortcut{top:12px;right:13px}.page{margin-top:85px}}
+@media(max-width:740px){#section-notice h1{margin-bottom:43px}.notice-text p{margin-bottom:20px!important}.page{margin-top:75px}.hint-shortcut{top:12px;right:13px;padding:8px 13px}.prep-warning{font-size:13px}}
