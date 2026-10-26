@@ -226,3 +226,13 @@ body.modal-open{overflow:hidden}
 .hint-shortcut:focus-visible{outline:3px solid #3867a4;outline-offset:3px}
 @media(max-width:1020px){.hint-shortcut{top:12px;right:13px}.page{margin-top:85px}}
 @media(max-width:740px){#section-notice h1{margin-bottom:43px}.notice-text p{margin-bottom:20px!important}.page{margin-top:75px}.hint-shortcut{top:12px;right:13px;padding:8px 13px}.prep-warning{font-size:13px}}
+
+/* Narrative text blocks: replaceable with illustrations in a later production pass. */
+.narrative-block{max-width:640px;margin:30px auto 38px;padding:26px 27px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:rgba(255,255,255,.23)}
+.narrative-block h2,.narrative-block h3{font-size:17px;line-height:1.6;letter-spacing:.09em;margin:0 0 18px;text-align:left}
+.narrative-block .story{max-width:none;margin:0 0 15px;line-height:2.1;white-space:pre-line}
+.narrative-block .story:last-child{margin-bottom:0}
+.narrative-opening{margin-top:0;margin-bottom:52px}
+.narrative-after{margin:30px auto 14px}
+.narrative-ending{margin-top:34px}
+@media(max-width:740px){.narrative-block{padding:21px 18px}.narrative-block .story{font-size:15px}}

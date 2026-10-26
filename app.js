@@ -123,7 +123,12 @@
       ${exists('prep')?done('確認しました・ゲームを始める'):action('確認しました・ゲームを始める','unlock:prep')}`);
   }
   function renderPrep() {
-    return panel('prep',`${img('step0.png')}
+    return panel('prep',`<div class="narrative-block narrative-opening"><h2>STORY</h2>
+      ${story('あなたには、子どもの頃からの夢がある。旅客機のパイロットになることだ。')}
+      ${story('大学時代にはその夢を目指して勉強していた。しかし、厳しい選抜や人の命を預かる責任の大きさを知るにつれ、自分に務まる自信がなくなってしまった。')}
+      ${story('結局、応募することなく卒業し、現在の仕事に就いた。仕事にはやりがいを感じている。それでも、パイロットへの憧れは消えていない。')}
+      ${story('そんなあなたのもとに、ミステリーポットラックの最初の食材が届く。')}</div>
+      ${img('step0.png')}
       ${directive('まずは鍋を準備しましょう。')}
       <p class="subcopy">「STEP.0」の用紙と折り紙シートを取り出し、<br>書かれた指示に沿って鍋を作ってください。</p>
       <p class="subcopy">完成したら、鍋敷きシートの上に置けば準備完了です。<br>この鍋は、ゲームの途中でも使用します。</p>
@@ -175,16 +180,33 @@
       ${mission('今月の鍋の名前を突き止めよ！')}
       <p class="subcopy">導いた食材すべてを使って、鍋の名前を導いてください。</p>
       ${s.potSolved?`<div class="solved-name">${esc(m.pot)}</div>
-        ${next(n===3?'call':`m${n+1}`,n===3?'続きを読む':`${n+1}ヶ月目へ進む`)}`:
+        ${renderMonthAfterStory(n)}${next(n===3?'call':`m${n+1}`,n===3?'続きを読む':`${n+1}ヶ月目へ進む`)}`:
         `<form class="answer-form" data-form="pot:${n}" autocomplete="off">
           <input name="answer" aria-label="${n}ヶ月目の鍋の名前" placeholder="鍋の名前を入力" required>
           <button class="action" type="submit">判定</button></form>
           <p class="feedback" role="status" aria-live="polite"></p>`}
     </div>`;
   }
+  function renderMonthAfterStory(n) {
+    const passages = {
+      1: [
+        '届いたのは、ごく普通の鍋の食材だった。もっと驚くような組み合わせを期待していたあなたは、少し拍子抜けする。',
+        'ただ、味は悪くない。初回はこんなものかもしれないと思い、次の月を楽しみに待つ。'
+      ],
+      2: [
+        '今月は、先月と違って意外な食材が届いた。確かに驚きはあったけれど、求めていた楽しさとは少し違う。',
+        '「普通すぎるのも物足りないけれど、これはこれで違うな……」そんな複雑な気持ちのまま、次の月を待つ。'
+      ],
+      3: [
+        'ショートケーキまで鍋に入れて、実際に食べてみた。さすがに、期待していたものとは違いすぎる。',
+        '食べ終えたあなたは、どうしても気になって、サービスに問い合わせることにした。'
+      ]
+    };
+    return `<div class="narrative-block narrative-after"><h3>STORY</h3>${passages[n].map(story).join('')}</div>`;
+  }
   function renderCall() {
     return panel('call',`<h2>ちょっと待って……。</h2>
-      ${story('3ヶ月目の食材を見て、とうとうサービスに問い合わせることにした。')}
+      ${story('3ヶ月目の鍋を食べ終えて、とうとうサービスに問い合わせることにした。')}
       <div class="story-dialogue">${bubble('ショートケーキってなんですか？\nこれまでも変な食材が入っていましたし、まあ美味しかったんですけど……。')}
         <div class="dialogue operator"><span class="speaker">コールセンター</span><div class="bubble">いえいえ、お客様。<br>そちらは食後にお召し上がりください。</div></div>
         ${bubble('……そうだったんですね。わかりました。')}</div>
@@ -202,7 +224,10 @@
   }
   function renderLast() {
     const s=state.last;
-    return panel('last',`${img('laststep.png')}
+    return panel('last',`<div class="narrative-block narrative-opening"><h2>4ヶ月目</h2>
+      ${story('3ヶ月間サービスを利用したあなたのもとに、ご贔屓様への感謝を伝える特別な封筒が届く。')}
+      ${story('3ヶ月目のこともあり、少し半信半疑。それでも、ここまで続けてきたのだから、最後にもう一度試してみようと思った。')}</div>
+      ${img('laststep.png')}
       ${directive('4ヶ月目の封筒を開けてください。')}
       ${s.phase==='sealed'?action('開けました','last-opened'):done('開けました')}
       ${s.phase!=='sealed'?renderLastConfirm():''}`);
@@ -225,10 +250,20 @@
       <input name="answer" aria-label="今月の鍋の名前" placeholder="鍋の名前を入力" ${s.finalSolved?'disabled':''} required>
       <button class="action" type="submit" ${s.finalSolved?'disabled':''}>判定</button></form>
       <p class="feedback" role="status" aria-live="polite"></p>
-      ${s.finalSolved?`<div class="solved-name">やみつき鍋</div>${next('ending','エンディングを見る')}`:''}</div></div>`;
+      ${s.finalSolved?`<div class="solved-name">やみつき鍋</div>
+        <div class="narrative-block narrative-after"><h3>STORY</h3>
+        ${story('届いたのは、特別な食材をふんだんに使った鍋だった。奇妙な組み合わせではない。それなのに、一口食べると、思いがけないおいしさに驚いた。')}
+        ${story('期待していたような鍋は、結局一度も届かなかった。それでも、この4ヶ月間を振り返ると、不思議と悪くない気分だった。')}</div>
+        ${next('ending','エンディングを見る')}`:''}</div></div>`;
   }
   function renderEnding() {
-    return panel('ending',`<div class="ending-image"><img src="./assets/ending-placeholder.svg" alt="エンディング画像（差し替え予定）"></div>`);
+    return panel('ending',`<div class="ending-image"><img src="./assets/ending-placeholder.svg" alt="エンディング画像（差し替え予定）"></div>
+      <div class="narrative-block narrative-ending"><h2>まだ、決まっていない</h2>
+      ${story('食事を終え、4ヶ月間を振り返る。期待外れのことも、驚きすぎて戸惑ったこともあった。それでも、最後には思いがけないおいしい鍋に出会えた。')}
+      ${story('ふと、ずっと心の奥に残っていたパイロットの夢を思う。選考は厳しいし、自分に適性があるかもわからない。挑戦したとしても、夢が叶うとは限らない。')}
+      ${story('でも、まだ挑戦すらしていないのに、自分には無理だと決めつけていた。それだけは、今からでも変えられる。')}
+      ${story('あなたはパソコンを開き、パイロットの募集要項を調べ始めた。以前は最後まで進められなかった応募に、今度こそ向き合ってみよう。')}
+      ${story('夢を叶えるための、最初の一歩を踏み出した。')}</div>`);
   }
   function buildStage(stage) {
     if(stage==='notice')return renderNotice();
@@ -242,7 +277,24 @@
   }
   function renderAll(){root.innerHTML=state.unlocked.map(buildStage).join('');}
   function feedback(form,text){const p=form.parentElement.querySelector('.feedback');if(p){p.textContent=text;}}
+  function activateDebug() {
+    // Developer-only shortcut: make every stage and every answer complete.
+    state.unlocked = [...STAGES];
+    state.prepDone = true;
+    for (const m of DATA.months) {
+      state.months[m.id] = {phase:'confirmed',solved:m.foods.map((_,i)=>i),potSolved:true};
+    }
+    state.last = {phase:'confirmed',firstSolved:true,finalSolved:true};
+    save();
+    closeModal();
+    renderAll();
+    document.getElementById('section-ending')?.scrollIntoView({behavior:'smooth',block:'start'});
+  }
   function checkFood(n,form) {
+    if (n === 1 && norm(form.elements.answer.value) === norm('デバッグ')) {
+      activateDebug();
+      return;
+    }
     const m=month(n),s=monthState(n);
     const index=m.foods.findIndex(f=>matches(form.elements.answer.value,[f.name,...f.aliases]));
     if(index<0){feedback(form,'その答えは違うようです。');return;}
