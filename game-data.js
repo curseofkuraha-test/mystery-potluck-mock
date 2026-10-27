@@ -17,7 +17,7 @@ window.POTLUCK_DATA = {
   months: [
     {
       id:1, image:'step1.png', count:5,
-      label:'1ヶ月目', pot:'ていばん鍋', potAliases:['ていばんなべ','定番鍋'],
+      label:'1ヶ月目', pot:'ていばん鍋', potAliases:['ていばん','定番'],
       intro:'早速初めての食材が届いたみたいだ。一体どんな鍋になるんだろう。とても楽しみだ…。',
       foods:[
         {name:'ほたて',aliases:['ホタテ','帆立','帆立貝','ほたてがい'],reaction:'おっ、いい食材だな……！'},
@@ -30,7 +30,7 @@ window.POTLUCK_DATA = {
     },
     {
       id:2, image:'step2.png', count:6,
-      label:'2ヶ月目', pot:'びっくり鍋', potAliases:['びっくりなべ'],
+      label:'2ヶ月目', pot:'びっくり鍋', potAliases:['びっくり'],
       intro:'2ヶ月目の食材が届いた。先月とは違った刺激を期待してしまうが、果たして…',
       foods:[
         {name:'とりにく',aliases:['鶏肉','鳥肉','トリニク'],reaction:'ほかの食材次第だけど、これは安心できるな。'},
@@ -44,7 +44,7 @@ window.POTLUCK_DATA = {
     },
     {
       id:3, image:'step3.png', count:7,
-      label:'3ヶ月目', pot:'ばらんす鍋', potAliases:['ばらんすなべ','バランス鍋'],
+      label:'3ヶ月目', pot:'ばらんす鍋', potAliases:['ばらんす','バランス'],
       intro:'3ヶ月目の食材が届いた。今月こそ、ほどよい刺激であってほしい。',
       foods:[
         {name:'はくさい',aliases:['白菜','ハクサイ'],reaction:'うん、これなら鍋らしい。ちょっとほっとする。'},
@@ -59,7 +59,7 @@ window.POTLUCK_DATA = {
     }
   ],
   last: {
-    initial:['やみなべ','闇鍋'],
-    final:['やみつき鍋','やみつきなべ']
+    initial:['やみ','闇'],
+    final:['やみつき']
   }
 };

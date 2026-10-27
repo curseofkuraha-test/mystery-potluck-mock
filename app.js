@@ -49,6 +49,9 @@
     .replace(/[ァ-ヶ]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60))
     .replace(/鍋/g,'なべ');
   const matches = (value,variants) => variants.some(v=>norm(value)===norm(v));
+  // 鍋の解答欄には『鍋』を固定表示する。入力した部分の末尾に『鍋』があっても受け付ける。
+  const potStem = value => norm(value).replace(/なべ$/, '');
+  const matchesPot = (value,variants) => variants.some(v=>potStem(value)===potStem(v));
   const img = file => `<img class="step-heading" src="./assets/${file}" alt="${file==='laststep.png'?'LAST STEP 4ヶ月目':file==='step0.png'?'STEP.0':file.replace('.png','').toUpperCase()}" width="447" height="320">`;
   const action = (label,key,kind='') => `<div class="actions"><button type="button" class="action ${kind}" data-action="${key}">${esc(label)}</button></div>`;
   const done = label => `<div class="actions"><button type="button" class="action" disabled>${esc(label)}</button></div>`;
@@ -135,21 +138,28 @@
       <p class="prep-warning"><strong>※ゲーム中に破れてしまったり、作る過程で破れた際は、同封されている予備をお使いください。</strong></p>
       ${state.prepDone?done('鍋を準備しました'):action('鍋を準備しました','prep-done')}`);
   }
+  const enclosedContents = {
+    1:['解答用紙 1枚','二つ折りの紙 5枚','旨味シート'],
+    2:['解答用紙 1枚','紙 12枚'],
+    3:['解答用紙 1枚','二つ折りの紙 7枚']
+  };
+  function enclosedList(n) {return `<div class="enclosed-count"><strong>封入物の目安</strong><ul>${enclosedContents[n].map(t=>`<li>${esc(t)}</li>`).join('')}</ul></div>`;}
   function renderMonth(n) {
     const m=month(n),s=monthState(n);
-    return panel(`m${n}`,`${img(m.image)}${directive(`「${m.label}」の封筒を開けてください。`)}
-      ${s.phase==='sealed'?action('開けました',`opened:${n}`):done('開けました')}
+    return panel(`m${n}`,`${img(m.image)}${directive(`${m.label}の封筒を手元に用意してください。`)}
+      ${s.phase==='sealed'?action('用意しました',`opened:${n}`):done('用意しました')}
       ${s.phase!=='sealed'?renderConfirm(n):''}`);
   }
   function renderConfirm(n) {
     const m=month(n),s=monthState(n);
     return `<div class="reveal confirm-phase" data-phase="confirm-${n}">
       <div class="confirm-card">
-        <h3 class="confirm-heading">内容物を確認してください。</h3>
+        <h3 class="confirm-heading">封筒を開け、中身を鍋に入れてください。</h3>
         <p><strong>まずは、封筒の中から一番大きい紙を取り出し、机の上に置いてください。</strong></p>
         <p><strong>その後、封筒を鍋の上でひっくり返し、中身を入れてください。</strong></p>
+        ${enclosedList(n)}
       </div>
-      ${s.phase==='opened'?action('内容物を確認しました',`confirmed:${n}`):done('内容物を確認しました')}
+      ${s.phase==='opened'?action('鍋に中身を入れました',`confirmed:${n}`):done('鍋に中身を入れました')}
       ${s.phase==='confirmed'?renderPlay(n):''}</div>`;
   }
   function renderFoodLog(n,index,position) {
@@ -182,7 +192,7 @@
       ${s.potSolved?`<div class="solved-name">${esc(m.pot)}</div>
         ${renderMonthAfterStory(n)}${next(n===3?'call':`m${n+1}`,n===3?'続きを読む':`${n+1}ヶ月目へ進む`)}`:
         `<form class="answer-form" data-form="pot:${n}" autocomplete="off">
-          <input name="answer" aria-label="${n}ヶ月目の鍋の名前" placeholder="鍋の名前を入力" required>
+          <span class="pot-input-wrap"><input name="answer" aria-label="${n}ヶ月目の鍋の名前（鍋を除く）" placeholder="鍋の名前" required><span class="pot-suffix" aria-hidden="true">鍋</span></span>
           <button class="action" type="submit">判定</button></form>
           <p class="feedback" role="status" aria-live="polite"></p>`}
     </div>`;
@@ -228,18 +238,18 @@
       ${story('3ヶ月間サービスを利用したあなたのもとに、ご贔屓様への感謝を伝える特別な封筒が届く。')}
       ${story('3ヶ月目のこともあり、少し半信半疑。それでも、ここまで続けてきたのだから、最後にもう一度試してみようと思った。')}</div>
       ${img('laststep.png')}
-      ${directive('4ヶ月目の封筒を開けてください。')}
-      ${s.phase==='sealed'?action('開けました','last-opened'):done('開けました')}
+      ${directive('4ヶ月目の封筒を手元に用意してください。')}
+      ${s.phase==='sealed'?action('用意しました','last-opened'):done('用意しました')}
       ${s.phase!=='sealed'?renderLastConfirm():''}`);
   }
   function renderLastConfirm() {
     const s=state.last;
     return `<div class="reveal confirm-phase" data-phase="last-confirm">
       <div class="confirm-card">
-        <h3 class="confirm-heading">内容物を確認してください。</h3>
+        <h3 class="confirm-heading">封筒の中身を確認してください。</h3>
         <p>4ヶ月目に届いたものと、一枚の紙を確認してください。</p>
       </div>
-      ${s.phase==='opened'?action('内容物を確認しました','last-confirmed'):done('内容物を確認しました')}
+      ${s.phase==='opened'?action('準備しました','last-confirmed'):done('準備しました')}
       ${s.phase==='confirmed'?renderLastPlay():''}</div>`;
   }
   function renderLastPlay() {
@@ -247,7 +257,7 @@
     return `<div class="reveal" data-phase="last-play">
       ${mission('今月の鍋の名前を突き止めよ！')}
       <div class="answer-area"><form class="answer-form" data-form="last" autocomplete="off">
-      <input name="answer" aria-label="今月の鍋の名前" placeholder="鍋の名前を入力" ${s.finalSolved?'disabled':''} required>
+      <span class="pot-input-wrap"><input name="answer" aria-label="今月の鍋の名前（鍋を除く）" placeholder="鍋の名前" ${s.finalSolved?'disabled':''} required><span class="pot-suffix" aria-hidden="true">鍋</span></span>
       <button class="action" type="submit" ${s.finalSolved?'disabled':''}>判定</button></form>
       <p class="feedback" role="status" aria-live="polite"></p>
       ${s.finalSolved?`<div class="solved-name">やみつき鍋</div>
@@ -314,21 +324,21 @@
   }
   function checkPot(n,form) {
     const m=month(n),s=monthState(n);
-    if(!matches(form.elements.answer.value,[m.pot,...m.potAliases])){feedback(form,'鍋の名前が違うようです。');return;}
+    if(!matchesPot(form.elements.answer.value,[m.pot,...m.potAliases])){feedback(form,'鍋の名前が違うようです。');return;}
     s.potSolved=true;save();
     form.closest('[data-pot]').outerHTML=renderPot(n);
     showModal({comment:m.potReaction});
   }
   function checkLast(form) {
     const value=form.elements.answer.value;
-    if(matches(value,DATA.last.final)) {
+    if(matchesPot(value,DATA.last.final)) {
       if(state.last.finalSolved)return;
       state.last.finalSolved=true;save();
       form.closest('[data-phase="last-play"]').outerHTML=renderLastPlay();
       showModal({comment:'……まさか、こんな鍋だったなんて。',missionText:'エンディングを見る',missionLabel:'この先へ'});
       return;
     }
-    if(matches(value,DATA.last.initial)) {
+    if(matchesPot(value,DATA.last.initial)) {
       if(state.last.firstSolved){feedback(form,'その答えはすでに判明しています。');return;}
       state.last.firstSolved=true;save();
       form.elements.answer.value='';feedback(form,'');

@@ -236,3 +236,12 @@ body.modal-open{overflow:hidden}
 .narrative-after{margin:30px auto 14px}
 .narrative-ending{margin-top:34px}
 @media(max-width:740px){.narrative-block{padding:21px 18px}.narrative-block .story{font-size:15px}}
+
+/* 2026-10-27: 鍋の解答欄と封入物の枚数表示 */
+.answer-form .pot-input-wrap{display:flex;align-items:stretch;flex:1;min-width:0}
+.answer-form .pot-input-wrap input{min-width:0;width:100%;flex:1;border-right:0}
+.pot-suffix{display:flex;align-items:center;justify-content:center;flex:0 0 46px;background:#f3ece8;border:1px solid #c7bdb7;border-left:1px solid #d3c4bc;color:var(--ink);font-size:18px;font-weight:700;white-space:nowrap}
+.enclosed-count{margin-top:16px;padding:12px 15px;border:1px solid #d8cec8;background:rgba(255,255,255,.55);font-size:14px;line-height:1.8}
+.enclosed-count strong{display:block;margin-bottom:3px}
+.enclosed-count ul{margin:0;padding-left:1.4em}
+@media(max-width:380px){.pot-suffix{flex-basis:35px}.answer-form .pot-input-wrap input{padding-left:8px;padding-right:8px}}
